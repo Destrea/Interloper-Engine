@@ -12,6 +12,7 @@ Assimp: https://www.assimp.org <br>
 stb_image: https://github.com/nothings/stb <br>
 Dear ImGui: https://github.com/ocornut/imgui <br>
 Cmake: https://cmake.org <br>
+EnTT: https://github.com/skypjack/entt <br>
 
 ## References & Resources used: <br>
 LearnOpenGL: https://learnopengl.com <br>
