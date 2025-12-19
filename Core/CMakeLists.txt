@@ -12,6 +12,9 @@ vendor/glad/include/glad/glad.h
 vendor/glad/src/glad.c
 vendor/glad/include/KHR/khrplatform.h
 
+#entt
+vendor/entt/include/entt.hpp
+
 #imgui Includes
 vendor/ImGui/imconfig.h
 vendor/ImGui/imgui.cpp
@@ -45,7 +48,6 @@ Source/Core/ResourceManager.cpp
 Source/Core/ImGuiLayer.h
 Source/Core/ImGuiLayer.cpp
 
-
 Source/Core/Renderer/Renderer.h
 Source/Core/Renderer/Renderer.cpp
 Source/Core/Renderer/Shader.h
@@ -56,6 +58,11 @@ Source/Core/Renderer/Camera.h
 Source/Core/Renderer/Model.h
 Source/Core/Renderer/Mesh.h
 
+Source/Core/Scene/Scene.h
+Source/Core/Scene/Scene.cpp
+Source/Core/Scene/Entity.h
+Source/Core/Scene/Entity.cpp
+Source/Core/Scene/Components.h
 )
 
 add_library(Core STATIC)
@@ -73,5 +80,5 @@ target_link_libraries(Core glfw)
 target_link_libraries(Core glm)
 target_link_libraries(Core assimp)
 
-target_include_directories(Core PUBLIC "Source" "vendor/stb" "vendor/glad/include" "vendor/ImGui")
+target_include_directories(Core PUBLIC "Source" "vendor/stb" "vendor/glad/include" "vendor/ImGui" "vendor/entt/include")
 

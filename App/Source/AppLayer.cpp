@@ -12,8 +12,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Core/Renderer/Model.h"
-
+#include "Core/Scene/Entity.h"
+#include "Core/Scene/Components.h"
 #include <print>
+
+using namespace Core;
 
 AppLayer::AppLayer()
 {
@@ -23,65 +26,26 @@ AppLayer::AppLayer()
     Renderer::Shader shader = Core::ResourceManager::LoadShader("Resources/Shaders/Vertex.glsl", "Resources/Shaders/Frag.glsl", "test");
     printf("Shader compile debug");
     Renderer::Texture2D testTex = Core::ResourceManager::LoadTexture("Resources/Textures/wall.jpg", false, "wall");
+    m_ActiveScene = std::make_shared<Core::Scene>();
     //m_GuiLayer = std::make_shared<ImGuiLayer>();
 
+    Entity m_Player = m_ActiveScene->CreateEntity("Player");
+    m_Player.AddComponent<CameraComponent>(glm::vec3{0.0f,0.0f,3.0f});
 
+    m_PlayerEntity = m_Player;
 
-    p_Camera = std::make_shared<Camera>(glm::vec3(0.0f,0.0f,3.0f));
     m_InputManager = std::make_shared<Core::InputManager>();
-    //m_ResourceManager = std::make_shared<Core::ResourceManager>();
+
+
     //Disable cursor by default.
     glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-
-    //Core::MapScene test("Resources/Maps/unnamed.map", "testMap");
-    //maps.push_back(test);
 
     Model test("Resources/Maps/unnamed.obj");
     maps.push_back(test);
     Renderer::Texture2D tex = Core::ResourceManager::GetTexture("wall");
     shader.setInteger("texture1", tex.ID);
 
-
-#if OLD
-    // Create geometry
-    glCreateVertexArrays(1, &m_VertexArray);
-    glCreateBuffers(1, &m_VertexBuffer);
-
-    struct Vertex
-    {
-        glm::vec2 Position;
-        glm::vec2 TexCoord;
-    };
-
-    Vertex vertices[] = {
-        // Vertex Coord     Tex Coord
-        { {-1.0f, -1.0f }, { 0.0f, 0.0f } },  // Bottom-left
-        { { 3.0f, -1.0f }, { 2.0f, 0.0f } },  // Bottom-right
-        { {-1.0f,  3.0f }, { 0.0f, 2.0f } }   // Top-left
-    };
-
-    glNamedBufferData(m_VertexBuffer, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // Bind the VBO to VAO at binding index 0
-    glVertexArrayVertexBuffer(m_VertexArray, 0, m_VertexBuffer, 0, sizeof(Vertex));
-
-    // Enable attributes
-    glEnableVertexArrayAttrib(m_VertexArray, 0); // position
-    glEnableVertexArrayAttrib(m_VertexArray, 1); // uv
-
-    // Format: location, size, type, normalized, relative offset
-    glVertexArrayAttribFormat(m_VertexArray, 0, 2, GL_FLOAT, GL_FALSE, static_cast<GLuint>(offsetof(Vertex, Position)));
-    glVertexArrayAttribFormat(m_VertexArray, 1, 2, GL_FLOAT, GL_FALSE, static_cast<GLuint>(offsetof(Vertex, TexCoord)));
-
-    // Link attribute locations to binding index 0
-    glVertexArrayAttribBinding(m_VertexArray, 0, 0);
-    glVertexArrayAttribBinding(m_VertexArray, 1, 0);
-
-
-
-#endif
-
+    //squareEntity.HasComponent<TransformComponent>();
 }
 
 AppLayer::~AppLayer()
@@ -113,21 +77,20 @@ void AppLayer::OnEvent(Core::Event& event)
 void AppLayer::OnUpdate(float ts)
 {
     //Keyboard Input
-    m_InputManager->processKeyboardInput(Core::Application::Get().GetWindow()->GetHandle(), p_Camera, ts);
-    m_InputManager->processMouseInput(p_Camera, m_MousePosition.x, m_MousePosition.y);
+    m_InputManager->processKeyboardInput(Core::Application::Get().GetWindow()->GetHandle(), &m_PlayerEntity.GetComponent<CameraComponent>().p_Camera, ts);
+    m_InputManager->processMouseInput(&m_PlayerEntity.GetComponent<CameraComponent>().p_Camera, m_MousePosition.x, m_MousePosition.y);
     //Mouse Input
 
 }
 
 void AppLayer::OnRender()
 {
-
     Renderer::Shader newShader = Core::ResourceManager::GetShader("test");
 
     Renderer::Texture2D tex = Core::ResourceManager::GetTexture("wall");
 
-    glm::mat4 projection = glm::perspective(glm::radians(p_Camera->Zoom), (float)1920 / (float)1080, 0.1f, 100.0f);
-    glm::mat4 view = p_Camera->GetViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Zoom), (float)1920 / (float)1080, 0.1f, 100.0f);
+    glm::mat4 view = m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.GetViewMatrix();
 
     newShader.setMatrix4("projection", projection);
     newShader.setMatrix4("view", view);
@@ -180,6 +143,9 @@ bool AppLayer::OnMouseButtonPressed(Core::MouseButtonPressedEvent& event)
 
     //Mouse button press handling.
     //Double check with TheCherno github to see how its used.
+
+
+
     if(m_InputManager->get_cursor() == false)
     {
         glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);

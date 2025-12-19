@@ -14,7 +14,8 @@
 #include "Core/ResourceManager.h"
 #include <glm/glm.hpp>
 #include "Core/Renderer/Model.h"
-
+#include "Core/Scene/Scene.h"
+#include "Core/Scene/Entity.h"
 
 class AppLayer : public Core::Layer
 {
@@ -39,10 +40,10 @@ private:
     uint32_t m_VertexBuffer = 0;
     std::shared_ptr<ImGuiLayer> m_GuiLayer = nullptr;
     std::shared_ptr<Core::Window> m_Window = nullptr;
-    std::shared_ptr<Camera> p_Camera = nullptr;
     std::shared_ptr<Core::InputManager> m_InputManager = nullptr;
     std::shared_ptr<Core::ResourceManager> m_ResourceManager = nullptr;
-
+    std::shared_ptr<Core::Scene> m_ActiveScene = nullptr;
+    Core::Entity m_PlayerEntity;
     glm::vec2 m_MousePosition { 0.0f};
     glm::vec2 m_FlamePosition { 0.0f};
 

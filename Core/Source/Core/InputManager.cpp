@@ -30,7 +30,7 @@ namespace Core {
         return cursor_locked;
     }
 
-    void InputManager::processKeyboardInput(GLFWwindow* window, std::shared_ptr<Camera> p_Camera, float deltaTime)
+    void InputManager::processKeyboardInput(GLFWwindow* window, Camera *p_Camera, float deltaTime)
     {
         if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
@@ -51,7 +51,7 @@ namespace Core {
             p_Camera->ProcessKeyboard(RIGHT, deltaTime);
     }
 
-    void InputManager::processMouseInput(std::shared_ptr<Camera> p_Camera, double xposIn, double yposIn)
+    void InputManager::processMouseInput(Camera *p_Camera, double xposIn, double yposIn)
     {
 
         float xpos = static_cast<float>(xposIn);

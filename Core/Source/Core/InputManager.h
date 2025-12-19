@@ -18,8 +18,8 @@ namespace Core
 
         bool get_cursor();
         void set_cursor(bool val);
-        void processKeyboardInput(GLFWwindow *window, std::shared_ptr<Camera> p_Camera, float deltaTime);
-        void processMouseInput(std::shared_ptr<Camera> p_Camera, double xposIn, double yposIn);
+        void processKeyboardInput(GLFWwindow *window, Camera *p_Camera, float deltaTime);
+        void processMouseInput(Camera *p_Camera, double xposIn, double yposIn);
 
         bool cursor_locked = true;
 

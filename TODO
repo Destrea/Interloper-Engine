@@ -1,10 +1,24 @@
 
 TODO:
 ============================================================
-3D collision Detection
-
 Object Manager and Entity Component System
+
+3D collision Detection
 
 Base audio Implementation
 
 Config/Settings File reading/writing
+
+
+
+Backlog:
+==============================
+Entity Control System and Object manager
+UUID system
+
+3D Collisions
+Config/Settings/Input file handling
+
+
+
+Base Audio Implementation
