@@ -24,7 +24,8 @@ AppLayer::AppLayer()
 
 
     Renderer::Shader shader = Core::ResourceManager::LoadShader("Resources/Shaders/Vertex.glsl", "Resources/Shaders/Frag.glsl", "test");
-    printf("Shader compile debug");
+    Renderer::Shader fbShader = Core::ResourceManager::LoadShader("Resources/Shaders/fb_vert.glsl","Resources/Shaders/fb_frag.glsl", "Framebuffer");
+
     Renderer::Texture2D testTex = Core::ResourceManager::LoadTexture("Resources/Textures/wall.jpg", false, "wall");
     m_ActiveScene = std::make_shared<Core::Scene>();
     //m_GuiLayer = std::make_shared<ImGuiLayer>();
@@ -35,6 +36,9 @@ AppLayer::AppLayer()
     m_PlayerEntity = m_Player;
 
     m_InputManager = std::make_shared<Core::InputManager>();
+
+    m_Framebuffer = Core::Application::Get().GetFramebuffer();
+
 
 
     //Disable cursor by default.
@@ -50,6 +54,7 @@ AppLayer::AppLayer()
 
 AppLayer::~AppLayer()
 {
+    m_Framebuffer->Shutdown();
     glDeleteVertexArrays(1, &m_VertexArray);
     glDeleteBuffers(1, &m_VertexBuffer);
 
@@ -85,11 +90,12 @@ void AppLayer::OnUpdate(float ts)
 
 void AppLayer::OnRender()
 {
+    glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer->GetFBO());
     Renderer::Shader newShader = Core::ResourceManager::GetShader("test");
 
     Renderer::Texture2D tex = Core::ResourceManager::GetTexture("wall");
 
-    glm::mat4 projection = glm::perspective(glm::radians(m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Zoom), (float)1920 / (float)1080, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Zoom), (float)800 / (float)600, 0.1f, 100.0f);
     glm::mat4 view = m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.GetViewMatrix();
 
     newShader.setMatrix4("projection", projection);
@@ -99,40 +105,30 @@ void AppLayer::OnRender()
     model = glm::scale(model, glm::vec3(1.0f/20.0f, 1.0f/20.0f, 1.0f/20.0f));	// it's a bit too big for our scene, so scale it down
     newShader.setMatrix4("model", model);
 
-    //Core::MapScene test = maps[0];
 
 
-    //Uniforms
-    //glUniform1f(0, Core::Application::GetTime());
-
-    //glm::vec2 framebufferSize = Core::Application::Get().GetFramebufferSize();
-    //glUniform2f(1, framebufferSize.x, framebufferSize.y);
-
-    //glViewport(0, 0, static_cast<GLsizei>(framebufferSize.x), static_cast<GLsizei>(framebufferSize.y));
-
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_2D, tex.ID);
-
-
+    //m_Framebuffer->Bind();
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    glEnable(GL_DEPTH_TEST);
 
     newShader.Use();
     maps[0].Draw(newShader);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    //test.DrawMap(newShader);
+    glDisable(GL_DEPTH_TEST);
 
-    // Render
-    //tex.IDglBindFramebuffer(GL_FRAMEBUFFER, 0);
-    //glBindTexture(GL_TEXTURE_2D, tex.ID);
-    //glBindVertexArray(m_VertexArray);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
+
+    uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
+
+    glClearColor(0.05f, 0.05f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT );
+
 }
-
-
 
 
 
@@ -167,7 +163,7 @@ bool AppLayer::OnMouseMoved(Core::MouseMovedEvent& event)
 bool AppLayer::OnWindowClosed(Core::WindowClosedEvent& event)
 {
     //Window closing Handling.
-    std::println("Window Closed!");
+    std::println("Window Closed!\n");
     AppLayer::~AppLayer();
     return false;
 }

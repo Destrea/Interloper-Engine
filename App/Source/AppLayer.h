@@ -10,12 +10,13 @@
 #include "Core/Renderer/Camera.h"
 #include "Core/InputEvents.h"
 #include "Core/WindowEvents.h"
-#include "Core/ImGuiLayer.h"
+#include "Core/EditorLayer.h"
 #include "Core/ResourceManager.h"
 #include <glm/glm.hpp>
 #include "Core/Renderer/Model.h"
 #include "Core/Scene/Scene.h"
 #include "Core/Scene/Entity.h"
+#include "Core/Renderer/Framebuffer.h"
 
 class AppLayer : public Core::Layer
 {
@@ -29,6 +30,9 @@ public:
     virtual void OnRender() override;
     std::vector<Model> maps;
 
+
+
+
 private:
     bool OnMouseButtonPressed(Core::MouseButtonPressedEvent& event);
     bool OnMouseMoved(Core::MouseMovedEvent& event);
@@ -38,14 +42,17 @@ private:
     uint32_t m_Shader = 0;
     uint32_t m_VertexArray = 0;
     uint32_t m_VertexBuffer = 0;
-    std::shared_ptr<ImGuiLayer> m_GuiLayer = nullptr;
+    std::shared_ptr<EditorLayer> m_GuiLayer = nullptr;
     std::shared_ptr<Core::Window> m_Window = nullptr;
     std::shared_ptr<Core::InputManager> m_InputManager = nullptr;
     std::shared_ptr<Core::ResourceManager> m_ResourceManager = nullptr;
     std::shared_ptr<Core::Scene> m_ActiveScene = nullptr;
+    std::shared_ptr<Renderer::Framebuffer> m_Framebuffer = nullptr;
+
     Core::Entity m_PlayerEntity;
+
     glm::vec2 m_MousePosition { 0.0f};
-    glm::vec2 m_FlamePosition { 0.0f};
 
     float deltaTime = 0.0;
+    friend class EditorLayer;
 };

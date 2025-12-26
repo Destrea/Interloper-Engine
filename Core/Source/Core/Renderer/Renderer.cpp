@@ -63,7 +63,7 @@ namespace Renderer {
 
         return result;
     }
-
+/*
     Framebuffer CreateFramebufferWithTexture(const Texture texture)
     {
         Framebuffer result;
@@ -102,5 +102,6 @@ namespace Renderer {
                           0, 0, framebuffer.ColorAttachment.Width, framebuffer.ColorAttachment.Height,               // Destination rect
                           GL_COLOR_BUFFER_BIT, GL_NEAREST);
     }
+*/
 
 }

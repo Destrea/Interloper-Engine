@@ -3,6 +3,7 @@
 #include "Layer.h"
 #include "Window.h"
 #include "Event.h"
+#include "Core/Renderer/Framebuffer.h"
 
 #include <glm/glm.hpp>
 
@@ -40,6 +41,7 @@ namespace Core {
 		glm::vec2 GetFramebufferSize() const;
 
 		std::shared_ptr<Window> GetWindow() const {return m_Window;}
+		std::shared_ptr<Renderer::Framebuffer> GetFramebuffer() const {return m_Framebuffer;}
 
 		static Application& Get();
 		ApplicationSpecification GetSpec() {return m_Specification; }
@@ -47,6 +49,7 @@ namespace Core {
 	private:
 		ApplicationSpecification m_Specification;
 		std::shared_ptr<Window> m_Window;
+		std::shared_ptr<Renderer::Framebuffer> m_Framebuffer;
 		bool m_Running = false;
 
 		float limitFPS = 1.0f / 60.0f;

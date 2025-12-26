@@ -1,7 +1,7 @@
 #include "Core/Application.h"
 
 #include "AppLayer.h"
-#include "Core/ImGuiLayer.h"
+
 
 //ADD - Main Game Loop handling and more.
 int main()
@@ -13,7 +13,7 @@ int main()
 
     Core::Application application(appSpec);
     application.PushLayer<AppLayer>();          //Game Layer
-    application.PushLayer<ImGuiLayer>();        //Debug/Engine Layer
+    application.PushLayer<EditorLayer>();        //Debug/Engine Layer
     //application.PushLayer<HUDLayer>();        //Heads up Display/Menu Layer
     application.Run();
 }

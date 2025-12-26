@@ -45,8 +45,8 @@ Source/Core/InputManager.cpp
 Source/Core/InputManager.h
 Source/Core/ResourceManager.h
 Source/Core/ResourceManager.cpp
-Source/Core/ImGuiLayer.h
-Source/Core/ImGuiLayer.cpp
+Source/Core/EditorLayer.h
+Source/Core/EditorLayer.cpp
 
 Source/Core/Renderer/Renderer.h
 Source/Core/Renderer/Renderer.cpp
@@ -57,6 +57,8 @@ Source/Core/Renderer/Texture.cpp
 Source/Core/Renderer/Camera.h
 Source/Core/Renderer/Model.h
 Source/Core/Renderer/Mesh.h
+Source/Core/Renderer/Framebuffer.h
+Source/Core/Renderer/Framebuffer.cpp
 
 Source/Core/Scene/Scene.h
 Source/Core/Scene/Scene.cpp

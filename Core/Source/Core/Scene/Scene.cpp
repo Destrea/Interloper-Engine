@@ -30,7 +30,22 @@ namespace Core
         entity.AddComponent<TransformComponent>();
 
         auto& tag = entity.AddComponent<TagComponent>();
+        // Make a way to dynamically name entities as "UnnamedEntity #"
         tag.Tag = name.empty() ? "UnnamedEntity" : name;
+/*
+        std::string newName = name;
+        uint32_t ID_Tag;
+        if(name.empty())
+        {
+           //Dynamically generate unnamedentity names
+           newName = "UnnamedEntity";
+           ID_Tag = crc32(newName);
+        }
+        else
+        {
+            ID_Tag = crc32(name);
+        }
+*/
 
         return entity;
     }

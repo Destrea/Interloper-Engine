@@ -9,6 +9,34 @@ namespace Core {
     class Entity
     {
     public:
+
+#if PLACEHOLDER
+        //For generating UUIDs
+        uint32_t crc32(std::string input, uint32_t polynomial = 0xEDB88320)
+        {
+            const char *data = input.c_str();
+            size_t len = input.length();
+            uint32_t crc = -1;
+
+            //Iterate to each char
+            for(size_t ii = 0; ii < len; ++ii)
+            {
+                //bitwise XOR operation, using the current char
+                crc ^= uint32_t(data[ii]);
+                for(size_t jj = 0; jj < 8; ++jj)
+                {
+                    uint32_t mask = (crc & 1) ? ~(crc & 1) + 1 : 0;
+                    crc = (crc >> 1) ^ (polynomial & mask);
+                }
+            }
+
+            //Returning the bitwise complement of the crc value
+            crc = ~crc;
+            return crc;
+        }
+
+#endif
+
         Entity() = default;
 
         Entity(entt::entity handle, Scene* scene);  //Constructor
@@ -49,7 +77,7 @@ namespace Core {
         operator bool() const { return m_EntityHandle != entt::null; }
 
     private:
-        entt::entity m_EntityHandle = entt::null;
+        entt::entity m_EntityHandle{ entt::null };
 
         Scene* m_Scene = nullptr;
     };

@@ -37,7 +37,14 @@ namespace Core {
         m_Window = std::make_shared<Window>(m_Specification.WindowSpec);
         m_Window->Create();
 
-        //Renderer::Utils::InitOpenGLDebugMessageCallback();
+        Renderer::FramebufferSpecification frameSpec;
+        //frameSpec.Width = m_Specification.WindowSpec.Width;
+        //frameSpec.Height = m_Specification.WindowSpec.Height;
+        frameSpec.Width = 1280;
+        frameSpec.Height = 720;
+        m_Framebuffer = std::make_shared<Renderer::Framebuffer>(frameSpec);
+
+
     }
 
     Application::~Application()
