@@ -24,6 +24,35 @@ namespace Core
 
     }
 
+    void Scene::OnUpdate(float ts)
+    {
+        //Update scripts
+        {
+            //Updated from capturing [=] to [this,ts] to ensure that both "this" and the timestep are captured, while complying with C++20 standards
+            m_Registry.view<NativeScriptComponent>().each([this, ts](auto entity, auto& nsc)
+            {
+                //TODO: Move to Scene::OnScenePlay
+                if(!nsc.Instance)
+                {
+                    nsc.Instance = nsc.InstantiateScript();
+                    nsc.Instance->m_Entity = Entity{entity, this};    //Setting the Scriptable entity's "entity" to be the current one
+                    nsc.Instance->OnCreate();
+                }
+
+                nsc.Instance->OnUpdate(ts);
+
+            });
+        }
+
+        //Scene Camera and rendering code here
+
+    }
+
+
+
+    //TODO: Add Scene::OnUpdate() and update the camera class
+            //This will allow you to create a "scene" camera, independant from the player camera, and handle all the rendering, per-scene, rather than having all of the currently loaded scenes be rendered every frame.
+
     Entity Scene::CreateEntity(const std::string& name)
     {
         Entity entity = { m_Registry.create(), this };
@@ -32,20 +61,7 @@ namespace Core
         auto& tag = entity.AddComponent<TagComponent>();
         // Make a way to dynamically name entities as "UnnamedEntity #"
         tag.Tag = name.empty() ? "UnnamedEntity" : name;
-/*
-        std::string newName = name;
-        uint32_t ID_Tag;
-        if(name.empty())
-        {
-           //Dynamically generate unnamedentity names
-           newName = "UnnamedEntity";
-           ID_Tag = crc32(newName);
-        }
-        else
-        {
-            ID_Tag = crc32(name);
-        }
-*/
+
 
         return entity;
     }

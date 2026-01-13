@@ -75,8 +75,8 @@ namespace Renderer
 
     void Framebuffer::Rescale(uint32_t width, uint32_t height)
     {
-        //m_Specification.Width = width;
-        //m_Specification.Height = height;
+        m_Specification.Width = width;
+        m_Specification.Height = height;
 
         //Init();
         glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);

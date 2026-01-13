@@ -1,6 +1,6 @@
 
 #include "EditorLayer.h"
-
+using namespace Core;
 
 #include <print>
 
@@ -45,6 +45,7 @@ void EditorLayer::toggleHidden()
 void EditorLayer::OnUpdate(float ts)
 {
     m_Timestep = ts;
+    //m_ActiveScene->OnUpdate(ts);
 }
 
 
@@ -55,11 +56,14 @@ void EditorLayer::EditorViewport()
 
 void EditorLayer::OnRender()
 {
+    //TODO: Move all of this to a separate "ImGuiRender" class
     static ImGuiIO& io = ImGui::GetIO(); (void) io;
     glfwPollEvents();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+
 
     if(ImGui::BeginMainMenuBar())
     {
@@ -70,6 +74,11 @@ void EditorLayer::OnRender()
         }
         ImGui::EndMainMenuBar();
     }
+
+    ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+
+     m_SceneHierarchyPanel.OnImGuiRender();
+
 
     if(ImGui::Begin("Editor"))
     {
@@ -91,8 +100,9 @@ void EditorLayer::OnRender()
         {
             m_Framebuffer->Rescale((uint32_t)windowSize.x, (uint32_t)windowSize.y);
             m_ViewportSize = {windowSize.x, windowSize.y};
+            glViewport(0,0, m_Framebuffer->GetSpec().Width,m_Framebuffer->GetSpec().Height);
         }
-        glViewport(0,0, windowSize.x, windowSize.y);
+        //glViewport(0,0, windowSize.x, windowSize.y);
 
         textureID = m_Framebuffer->GetColorAttachmentRendererID();
         ImVec2 pos = ImGui::GetCursorScreenPos();
@@ -110,7 +120,7 @@ void EditorLayer::OnRender()
 
 
 
-
+#if Debug
     if(ImGui::Begin("Framebuffer Debug"))
     {
         ImGui::Text("Fbo Width/Height: %d / %d", m_Framebuffer->GetSpec().Width, m_Framebuffer->GetSpec().Height);
@@ -128,7 +138,7 @@ void EditorLayer::OnRender()
         ImGui::Text("FPS: %f", 1.0f / m_Timestep);
         ImGui::End();
     }
-
+#endif
 
 
 
@@ -174,6 +184,11 @@ void EditorLayer::BeginEngineUI()
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
+    //m_ActiveScene = std::make_shared<Core::Scene>();
+    m_ActiveScene = Core::Application::Get().GetActiveScene();
+    m_EditorCamera = m_ActiveScene->CreateEntity("EditorCamera");
+    m_EditorCamera.AddComponent<CameraComponent>();
+
     m_Framebuffer = Core::Application::Get().GetFramebuffer();
 
     window = Core::Application::Get().GetWindow()->GetHandle();
@@ -181,6 +196,35 @@ void EditorLayer::BeginEngineUI()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
+    //Core::Entity m_Camera = m_ActiveScene->CreateEntity("EditorCamera");
+    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+#if Testing
+    //Editor Camera controller
+    class CameraController : public ScriptableEntity
+    {
+    public:
+        void OnCreate()
+        {
+
+            //std::cout << "CameraController::OnCreate!" << std::endl;
+            //printf("CameraController::OnCreate!");
+        }
+
+        void OnDestroy()
+        {
+
+        }
+
+        void OnUpdate(float ts)
+        {
+
+
+        }
+    };
+
+    //m_EditorCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+#endif
 }
 
 bool EditorLayer::OnMouseButtonPressed(Core::MouseButtonPressedEvent& event)
@@ -188,13 +232,21 @@ bool EditorLayer::OnMouseButtonPressed(Core::MouseButtonPressedEvent& event)
 
     //Mouse button press handling.
     //Double check with TheCherno github to see how its used.
+    /*
+
+
+    if(m_InputManager->get_cursor() == false)
+    {
+        glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        m_InputManager->set_cursor(true);
+    }
+    */
     return false;
 }
 
 bool EditorLayer::OnMouseMoved(Core::MouseMovedEvent& event)
 {
     //Mouse movement handling.
-
     return false;
 }
 
@@ -210,11 +262,6 @@ bool EditorLayer::OnWindowClosed(Core::WindowClosedEvent& event)
 bool EditorLayer::OnKeyPressed(Core::KeyPressedEvent& event)
 {
     //Keyboard Input handling ONLY for AppLayer
-
-    if(event.GetKeyCode() == GLFW_KEY_J)
-    {
-        toggleHidden();
-    }
 
     return false;
 }

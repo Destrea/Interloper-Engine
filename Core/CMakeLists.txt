@@ -35,6 +35,7 @@ vendor/ImGui/imstb_truetype.h
 #application and engine
 Source/Core/Application.h
 Source/Core/Application.cpp
+Source/Core/Base.h
 Source/Core/Window.h
 Source/Core/Window.cpp
 Source/Core/Layer.h
@@ -47,6 +48,8 @@ Source/Core/ResourceManager.h
 Source/Core/ResourceManager.cpp
 Source/Core/EditorLayer.h
 Source/Core/EditorLayer.cpp
+Source/Core/MapLoader.h
+Source/Core/MapLoader.cpp
 
 Source/Core/Renderer/Renderer.h
 Source/Core/Renderer/Renderer.cpp
@@ -54,7 +57,13 @@ Source/Core/Renderer/Shader.h
 Source/Core/Renderer/Shader.cpp
 Source/Core/Renderer/Texture.h
 Source/Core/Renderer/Texture.cpp
+
 Source/Core/Renderer/Camera.h
+Source/Core/Renderer/Camera.cpp
+Source/Core/Renderer/EditorCamera.h
+Source/Core/Renderer/EditorCamera.cpp
+Source/Core/Renderer/PerspectiveCamera.h
+Source/Core/Renderer/PerspectiveCamera.cpp
 Source/Core/Renderer/Model.h
 Source/Core/Renderer/Mesh.h
 Source/Core/Renderer/Framebuffer.h
@@ -64,7 +73,11 @@ Source/Core/Scene/Scene.h
 Source/Core/Scene/Scene.cpp
 Source/Core/Scene/Entity.h
 Source/Core/Scene/Entity.cpp
+Source/Core/Scene/ScriptableEntity.h
 Source/Core/Scene/Components.h
+
+Source/Core/Panels/SceneHierarchyPanel.h
+Source/Core/Panels/SceneHierarchyPanel.cpp
 )
 
 add_library(Core STATIC)

@@ -43,7 +43,7 @@ namespace Core {
         frameSpec.Width = 1280;
         frameSpec.Height = 720;
         m_Framebuffer = std::make_shared<Renderer::Framebuffer>(frameSpec);
-
+        m_ActiveScene = std::make_shared<Core::Scene>();
 
     }
 

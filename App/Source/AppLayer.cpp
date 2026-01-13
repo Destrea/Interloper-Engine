@@ -7,13 +7,13 @@
 #include "Core/Renderer/Shader.h"
 #include "Core/InputManager.h"
 #include "Core/ResourceManager.h"
-#include "Core/Renderer/Camera.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Core/Renderer/Model.h"
 #include "Core/Scene/Entity.h"
 #include "Core/Scene/Components.h"
+#include "Core/MapLoader.h"
 #include <print>
 
 using namespace Core;
@@ -24,11 +24,10 @@ AppLayer::AppLayer()
 
 
     Renderer::Shader shader = Core::ResourceManager::LoadShader("Resources/Shaders/Vertex.glsl", "Resources/Shaders/Frag.glsl", "test");
-    Renderer::Shader fbShader = Core::ResourceManager::LoadShader("Resources/Shaders/fb_vert.glsl","Resources/Shaders/fb_frag.glsl", "Framebuffer");
 
     Renderer::Texture2D testTex = Core::ResourceManager::LoadTexture("Resources/Textures/wall.jpg", false, "wall");
-    m_ActiveScene = std::make_shared<Core::Scene>();
-    //m_GuiLayer = std::make_shared<ImGuiLayer>();
+    //m_ActiveScene = std::make_shared<Core::Scene>();
+    m_ActiveScene = Core::Application::Get().GetActiveScene();
 
     Entity m_Player = m_ActiveScene->CreateEntity("Player");
     m_Player.AddComponent<CameraComponent>(glm::vec3{0.0f,0.0f,3.0f});
@@ -44,8 +43,15 @@ AppLayer::AppLayer()
     //Disable cursor by default.
     glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    Model test("Resources/Maps/unnamed.obj");
-    maps.push_back(test);
+    Entity m_TestMap = m_ActiveScene->CreateEntity("TestMap");
+    m_TestMap.AddComponent<MapDataComponent>("Resources/Maps/Test1.map");
+    m_TestMap.AddComponent<ModelComponent>("Resources/Maps/Test1.obj");
+    maps.push_back(m_TestMap);
+    //Model test("Resources/Maps/Test1.obj");
+
+    //MapData test1("Resources/Maps/Test1.map");
+
+    m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Position = m_TestMap.GetComponent<MapDataComponent>().data.playerSpawn;
     Renderer::Texture2D tex = Core::ResourceManager::GetTexture("wall");
     shader.setInteger("texture1", tex.ID);
 
@@ -95,14 +101,16 @@ void AppLayer::OnRender()
 
     Renderer::Texture2D tex = Core::ResourceManager::GetTexture("wall");
 
-    glm::mat4 projection = glm::perspective(glm::radians(m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Zoom), (float)800 / (float)600, 0.1f, 100.0f);
+    //glm::mat4 projection = glm::perspective(glm::radians(m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Zoom), (float)800 / (float)600, 0.1f, 100.0f);
+
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
     glm::mat4 view = m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.GetViewMatrix();
 
     newShader.setMatrix4("projection", projection);
     newShader.setMatrix4("view", view);
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, -5.0f, 0.0f)); // translate it down so it's at the center of the scene
-    model = glm::scale(model, glm::vec3(1.0f/20.0f, 1.0f/20.0f, 1.0f/20.0f));	// it's a bit too big for our scene, so scale it down
+    model = glm::scale(model, glm::vec3(1.0f/32.0f, 1.0f/32.0f, 1.0f/32.0f));	// it's a bit too big for our scene, so scale it down
     newShader.setMatrix4("model", model);
 
 
@@ -114,7 +122,7 @@ void AppLayer::OnRender()
     glEnable(GL_DEPTH_TEST);
 
     newShader.Use();
-    maps[0].Draw(newShader);
+    maps[0].GetComponent<ModelComponent>().EntityModel.Draw(newShader);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -142,11 +150,6 @@ bool AppLayer::OnMouseButtonPressed(Core::MouseButtonPressedEvent& event)
 
 
 
-    if(m_InputManager->get_cursor() == false)
-    {
-        glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        m_InputManager->set_cursor(true);
-    }
 
     return false;
 }
@@ -155,7 +158,6 @@ bool AppLayer::OnMouseMoved(Core::MouseMovedEvent& event)
 {
     //Mouse movement handling.
     m_MousePosition = {static_cast<float>(event.GetX()), static_cast<float>(event.GetY()) };
-    //
     return false;
 }
 

@@ -3,7 +3,7 @@
 
 //#include "Common.h"
 #include <GLFW/glfw3.h>
-#include "Renderer/Camera.h"
+#include "Renderer/PerspectiveCamera.h"
 #include "Layer.h"
 #include "Application.h"
 #include <memory>
@@ -18,8 +18,8 @@ namespace Core
 
         bool get_cursor();
         void set_cursor(bool val);
-        void processKeyboardInput(GLFWwindow *window, Camera *p_Camera, float deltaTime);
-        void processMouseInput(Camera *p_Camera, double xposIn, double yposIn);
+        void processKeyboardInput(GLFWwindow *window, Renderer::PerspectiveCamera *p_Camera, float deltaTime);
+        void processMouseInput(Renderer::PerspectiveCamera *p_Camera, double xposIn, double yposIn);
 
         bool cursor_locked = true;
 

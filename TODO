@@ -1,7 +1,8 @@
 
 TODO:
 ============================================================
-Object Manager and Entity Component System
+X - Object Manager and Entity Component System
+Update Camera system to allow player(perspecive) cameras as well as an Editor Camera
 
 3D collision Detection
 

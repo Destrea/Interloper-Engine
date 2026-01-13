@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Event.h"
 #include "Core/Renderer/Framebuffer.h"
+#include "Core/Scene/Scene.h"
 
 #include <glm/glm.hpp>
 
@@ -42,7 +43,7 @@ namespace Core {
 
 		std::shared_ptr<Window> GetWindow() const {return m_Window;}
 		std::shared_ptr<Renderer::Framebuffer> GetFramebuffer() const {return m_Framebuffer;}
-
+		std::shared_ptr<Core::Scene> GetActiveScene() const {return m_ActiveScene; }
 		static Application& Get();
 		ApplicationSpecification GetSpec() {return m_Specification; }
 		static float GetTime();
@@ -55,6 +56,7 @@ namespace Core {
 		float limitFPS = 1.0f / 60.0f;
 
 		std::vector<std::unique_ptr<Layer>> m_LayerStack;
+		std::shared_ptr<Core::Scene> m_ActiveScene = nullptr;
 
 		friend class Layer;
 	};

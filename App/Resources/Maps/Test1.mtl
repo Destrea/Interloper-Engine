@@ -1,0 +1,6 @@
+newmtl Debugempty
+map_Kd Textures/Debugempty.png
+
+newmtl wall
+map_Kd Textures/wall.jpg
+
