@@ -45,6 +45,8 @@ private:
     std::shared_ptr<Core::Scene> m_ActiveScene = nullptr;
     std::shared_ptr<Renderer::Framebuffer> m_Framebuffer = nullptr;
 
+
+    Core::Entity m_CurrentLevel;
     Core::Entity m_PlayerEntity;
 
     glm::vec2 m_MousePosition { 0.0f};

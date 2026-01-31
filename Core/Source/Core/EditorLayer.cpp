@@ -186,8 +186,8 @@ void EditorLayer::BeginEngineUI()
 
     //m_ActiveScene = std::make_shared<Core::Scene>();
     m_ActiveScene = Core::Application::Get().GetActiveScene();
-    m_EditorCamera = m_ActiveScene->CreateEntity("EditorCamera");
-    m_EditorCamera.AddComponent<CameraComponent>();
+    //m_EditorCamera = m_ActiveScene->CreateEntity("EditorCamera");
+    //m_EditorCamera.AddComponent<CameraComponent>();
 
     m_Framebuffer = Core::Application::Get().GetFramebuffer();
 

@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+//#include "Core/Scene/Components.h"
 
 #if OLD
 enum Camera_Movement {
@@ -17,7 +17,7 @@ enum Camera_Movement {
 const float YAW         = -90.0f;
 const float PITCH       =   0.0f;
 const float SPEED       =   7.0f;
-const float SENSITIVITY =   0.1f;
+const float SENSITIVITY =   0.001f;
 const float ZOOM        =  75.0f;
 
 namespace Renderer
@@ -117,7 +117,7 @@ enum Camera_Movement {
 const float YAW         = -90.0f;
 const float PITCH       =   0.0f;
 const float SPEED       =   7.0f;
-const float SENSITIVITY =   0.1f;
+const float SENSITIVITY =   0.01f;
 const float ZOOM        =  75.0f;
 
 namespace Renderer
@@ -126,7 +126,8 @@ namespace Renderer
     {
     public:
         //Camera attributes
-        glm::vec3 Position;
+        glm::vec3& Position;
+        glm::vec3& LocalRotation;
         glm::vec3 Front;
         glm::vec3 Up;
         glm::vec3 Right;
@@ -141,7 +142,10 @@ namespace Renderer
         float MouseSensitivity;
         float Zoom;
 
+
+
         //Constructor with vector inputs
+        /*
         PerspectiveCamera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
         {
             Position = position;
@@ -150,6 +154,7 @@ namespace Renderer
             Pitch = pitch;
             updateCameraVectors();
         }
+
 
         //Constructor with scalar value inputs
         PerspectiveCamera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -161,6 +166,23 @@ namespace Renderer
             updateCameraVectors();
 
         }
+         */
+
+        PerspectiveCamera(glm::vec3 &Translation, glm::vec3 &Rotation, glm::vec3 up = glm::vec3(0.0f,1.0f, 0.0f)) : Front(glm::vec3(0.0f, 0.0f, -1.0f)),  Position(Translation), LocalRotation(Rotation), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+        {
+
+            //Position = Translation
+            //Position = Translation;
+            //LocalRotation = Rotation;
+            //Yaw = Rotation.x
+            //Pitch = Rotation.y
+            //Yaw = LocalRotation.x;
+            //Pitch = LocalRotation.y;
+            WorldUp = up;
+            updateCameraVectors();
+
+        }
+
 
         //returns the view matrix, calculated using euler angles and the lookAt matrix
         glm::mat4 GetViewMatrix()
@@ -173,6 +195,8 @@ namespace Renderer
         void ProcessKeyboard(Camera_Movement direction, float deltaTime)
         {
             float velocity = MovementSpeed * deltaTime;
+
+
             if(direction == FORWARD)
                 Position += Front * velocity;
             if(direction == BACKWARD)
@@ -182,25 +206,44 @@ namespace Renderer
             if(direction == RIGHT)
                 Position += Right * velocity;
             Position.y = 0.0f;
+
+
+            /*
+            if(direction == FORWARD)
+                transform[3][1] += velocity;
+            if(direction == BACKWARD)
+                transform[3][1] -= velocity;
+            if(direction == LEFT)
+                transform[3][0] -= velocity;
+            if(direction == RIGHT)
+                transform[3][0] += velocity;
+            //Position.y = 0.0f;
+
+            */
+
+
+
+
         }
 
         //Movement processing and calculation
         void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
         {
+            LocalRotation = glm::degrees(LocalRotation);
             xoffset *= MouseSensitivity;
             yoffset *= MouseSensitivity;
 
-            Yaw += xoffset;
-            Pitch += yoffset;
-
+            LocalRotation.x += xoffset;
+            LocalRotation.y += yoffset;
 
             if(constrainPitch)
             {
-                if(Pitch > 89.0f)
-                    Pitch = 89.0f;
-                if(Pitch < -89.0f)
-                    Pitch = -89.0f;
+                if(LocalRotation.y > 89.0f)
+                    LocalRotation.y = 89.0f;
+                if(LocalRotation.y < -89.0f)
+                    LocalRotation.y = -89.0f;
             }
+            LocalRotation = glm::radians(LocalRotation);
 
             updateCameraVectors();
         }
@@ -215,22 +258,29 @@ namespace Renderer
                 Zoom = 45.0f;
         }
 
-    private:
+
 
         //Updates the Right and Up camera vectors from the Camera's updated euler angles
         void updateCameraVectors()
         {
+            LocalRotation = glm::degrees(LocalRotation);
             //Calculate the new front vector
             glm::vec3 front;
-            front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-            front.y = sin(glm::radians(Pitch));
-            front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+            front.x = cos(glm::radians(LocalRotation.x)) * cos(glm::radians(LocalRotation.y));
+            front.y = sin(glm::radians(LocalRotation.y));
+            front.z = sin(glm::radians(LocalRotation.x)) * cos(glm::radians(LocalRotation.y));
+
+
             Front = glm::normalize(front);
 
             //Also re-calculate Right and Up
             Right = glm::normalize(glm::cross(Front, WorldUp));
             Up = glm::normalize(glm::cross(Right, Front));
+
+            LocalRotation = glm::radians(LocalRotation);
+
         }
+    private:
 
     };
 

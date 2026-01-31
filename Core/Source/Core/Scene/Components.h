@@ -1,15 +1,16 @@
 #pragma once
 
-
-
-#pragma once
-
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "Core/Renderer/Model.h"
 #include "Core/Renderer/PerspectiveCamera.h"
 #include "Core/Renderer/Camera.h"
 #include "ScriptableEntity.h"
 #include "Core/MapLoader.h"
+
+using namespace Renderer;
+
 namespace Core
 {
 
@@ -25,17 +26,27 @@ namespace Core
 
     struct TransformComponent
     {
-        glm::mat4 Transform;
+        //rotation will be stored as radians here, and converted into degrees for display in UI.
+        glm::vec3 Translation = {0.0f, 0.0f, 0.0f};
+        glm::vec3 Rotation = {0.0f, 0.0f, 0.0f};
+        glm::vec3 Scale = {1.0f, 1.0f, 1.0f};
 
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = default;
-        TransformComponent(const glm::mat4 transform) : Transform(transform) {}
+        TransformComponent(const glm::vec3 translation) : Translation(translation) {}
 
-        //Operator for the component, to "implicitly cast" the data of this component to be used as a certain type,
-        //instead of having to specify what "part" of it, since the "TransformComponent" is basically just a wrapper for the mat4 "Transform" data.
-        operator const glm::mat4&() const {return Transform;}
+        glm::mat4 GetTransform() const
+        {
+            //Rotation calculation, for the transform mat4
+            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), Rotation.x, {1,0,0})
+            * glm::rotate(glm::mat4(1.0f), Rotation.y, {0,1,0})
+            * glm::rotate(glm::mat4(1.0f), Rotation.z, {0,0,1});
+
+            //Multiplying together the translation, rotation and scale components, and returning it as our final Transform.
+            return glm::translate(glm::mat4(1.0f), Translation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
+        }
+
     };
-
 
     struct ModelComponent
     {
@@ -61,11 +72,11 @@ namespace Core
     {
         //Edit this to be more flexible to use for both "Editor" and "scene" camera types.
         //This would allow you to resize the window and still have the scene render properly, filling the window, at the correct aspect ratio.
-        Renderer::PerspectiveCamera p_Camera;
+        PerspectiveCamera p_Camera;
 
         CameraComponent() = default;
         CameraComponent(const CameraComponent&) = default;
-        CameraComponent(const glm::vec3& position) : p_Camera(position) {}
+        CameraComponent(glm::vec3 &position, glm::vec3 &rotation) : p_Camera(position, rotation) {}
 
 
         //Renderer::Camera Camera;
@@ -85,14 +96,11 @@ namespace Core
         ScriptableEntity*(*InstantiateScript)();
         void (*DestroyScript)(NativeScriptComponent*);
 
-
         template<typename T>
         void Bind()
         {
-
             InstantiateScript = []() { return static_cast<ScriptableEntity*>( new T() ); };
             DestroyScript = [](NativeScriptComponent* nsc) {delete nsc->Instance; nsc->Instance = nullptr; };
-
         }
 
     };

@@ -7,7 +7,7 @@ namespace Core
     class ScriptableEntity
     {
     public:
-        virtual ~ScriptableEntity();
+        virtual ~ScriptableEntity() {}
 
 
         template<typename T>

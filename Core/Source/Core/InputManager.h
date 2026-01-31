@@ -3,9 +3,12 @@
 
 //#include "Common.h"
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include "Renderer/PerspectiveCamera.h"
 #include "Layer.h"
 #include "Application.h"
+#include "Scene/Entity.h"
+#include "Scene/Components.h"
 #include <memory>
 
 namespace Core
@@ -20,6 +23,8 @@ namespace Core
         void set_cursor(bool val);
         void processKeyboardInput(GLFWwindow *window, Renderer::PerspectiveCamera *p_Camera, float deltaTime);
         void processMouseInput(Renderer::PerspectiveCamera *p_Camera, double xposIn, double yposIn);
+
+        void processPlayerInput(Entity playerEntity, float deltaTime, glm::vec2 mousePos, GLFWwindow* window);
 
         bool cursor_locked = true;
 

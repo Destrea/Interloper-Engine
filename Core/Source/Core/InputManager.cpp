@@ -41,6 +41,7 @@ namespace Core {
             set_cursor(false);
         }
 
+
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             p_Camera->ProcessKeyboard(FORWARD, deltaTime);
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -85,6 +86,38 @@ namespace Core {
         }
 
     }
+
+    void InputManager::processPlayerInput(Entity playerEntity, float deltaTime, glm::vec2 mousePos, GLFWwindow* window)
+    {
+        auto& tc = playerEntity.GetComponent<TransformComponent>();
+        auto& cc = playerEntity.GetComponent<CameraComponent>();
+
+        //Process Mouse Input
+        processMouseInput(&cc.p_Camera, mousePos.x, mousePos.y);
+        //Process Keyboard Input
+        float speed = 7.0f;
+
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            cc.p_Camera.ProcessKeyboard(FORWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            cc.p_Camera.ProcessKeyboard(BACKWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            cc.p_Camera.ProcessKeyboard(LEFT, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            cc.p_Camera.ProcessKeyboard(RIGHT, deltaTime);
+
+        /*
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            tc.Translation.x += speed * deltaTime;
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            tc.Translation.x -= speed * deltaTime;
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            tc.Translation.z -= speed * deltaTime;
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            tc.Translation.z += speed * deltaTime;
+        */
+    }
+
 
 
     InputManager& InputManager::Get()

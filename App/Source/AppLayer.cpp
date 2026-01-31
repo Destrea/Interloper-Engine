@@ -13,6 +13,7 @@
 #include "Core/Renderer/Model.h"
 #include "Core/Scene/Entity.h"
 #include "Core/Scene/Components.h"
+#include "Core/Scene/ScriptableEntity.h"
 #include "Core/MapLoader.h"
 #include <print>
 
@@ -21,8 +22,6 @@ using namespace Core;
 AppLayer::AppLayer()
 {
     //Create Shader and load it.
-
-
     Renderer::Shader shader = Core::ResourceManager::LoadShader("Resources/Shaders/Vertex.glsl", "Resources/Shaders/Frag.glsl", "test");
 
     Renderer::Texture2D testTex = Core::ResourceManager::LoadTexture("Resources/Textures/wall.jpg", false, "wall");
@@ -30,7 +29,10 @@ AppLayer::AppLayer()
     m_ActiveScene = Core::Application::Get().GetActiveScene();
 
     Entity m_Player = m_ActiveScene->CreateEntity("Player");
-    m_Player.AddComponent<CameraComponent>(glm::vec3{0.0f,0.0f,3.0f});
+    //m_Player.AddComponent<CameraComponent>(glm::vec3{0.0f,3.0f,0.0f});
+    auto& playerTransform = m_Player.GetComponent<TransformComponent>();
+    m_Player.AddComponent<CameraComponent>(playerTransform.Translation, playerTransform.Rotation);
+
 
     m_PlayerEntity = m_Player;
 
@@ -48,14 +50,69 @@ AppLayer::AppLayer()
     m_TestMap.AddComponent<ModelComponent>("Resources/Maps/Test1.obj");
     maps.push_back(m_TestMap);
     //Model test("Resources/Maps/Test1.obj");
-
     //MapData test1("Resources/Maps/Test1.map");
 
-    m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Position = m_TestMap.GetComponent<MapDataComponent>().data.playerSpawn;
+    //Set player camera position and transform
+    m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Position += m_TestMap.GetComponent<MapDataComponent>().data.playerSpawn;
+    m_PlayerEntity.GetComponent<TransformComponent>().Translation = glm:: vec4(m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Position, 1.0f);
+
+    m_CurrentLevel = m_TestMap;
+    auto& levelTC = m_CurrentLevel.GetComponent<TransformComponent>();
+    levelTC.Scale = glm::vec3(1.0f/32.0f,1.0f/32.0f,1.0f/32.0f);
+    levelTC.Translation = glm::vec3(0.0f, 0.0f, 0.0f);
+
+
+    class CameraController : public ScriptableEntity
+    {
+    public:
+        void OnCreate()
+        {
+            //printf("CameraController::OnCreate!");
+            //std::cout << "CameraController::OnCreate!" << std::endl;
+            //printf("CameraController::OnCreate!");
+        }
+
+        void OnDestroy()
+        {
+
+        }
+
+        void OnUpdate(float ts)
+        {
+            auto& tc = GetComponent<TransformComponent>();
+            auto& position = GetComponent<CameraComponent>().p_Camera.Position;
+
+            //TODO: Figure this out, after reworking the camera system, so that each object can be scripted independently
+
+            float speed = 7.0f;
+            GLFWwindow* window = Core::Application::Get().GetWindow()->GetHandle();
+            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+                tc.Translation.x += speed * ts;
+            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+                tc.Translation.x -= speed * ts;
+            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+                tc.Translation.z -= speed * ts;
+            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+                tc.Translation.z += speed * ts;
+
+            position = tc.Translation;
+
+
+
+
+            //tc.Translation = glm::vec4(position,1.0f);
+
+
+            //GetComponent<CameraComponent>().p_Camera.updateCameraVectors();
+        }
+    };
+
+    m_PlayerEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+    //m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Transform = m_PlayerEntity.GetComponent<TransformComponent>().Transform;
+
     Renderer::Texture2D tex = Core::ResourceManager::GetTexture("wall");
     shader.setInteger("texture1", tex.ID);
-
-    //squareEntity.HasComponent<TransformComponent>();
 }
 
 AppLayer::~AppLayer()
@@ -88,8 +145,13 @@ void AppLayer::OnEvent(Core::Event& event)
 void AppLayer::OnUpdate(float ts)
 {
     //Keyboard Input
-    m_InputManager->processKeyboardInput(Core::Application::Get().GetWindow()->GetHandle(), &m_PlayerEntity.GetComponent<CameraComponent>().p_Camera, ts);
-    m_InputManager->processMouseInput(&m_PlayerEntity.GetComponent<CameraComponent>().p_Camera, m_MousePosition.x, m_MousePosition.y);
+    //m_InputManager->processKeyboardInput(Core::Application::Get().GetWindow()->GetHandle(), &m_PlayerEntity.GetComponent<CameraComponent>().p_Camera, ts);
+    //m_InputManager->processMouseInput(&m_PlayerEntity.GetComponent<CameraComponent>().p_Camera, m_MousePosition.x, m_MousePosition.y);
+    m_InputManager->processPlayerInput(m_PlayerEntity, ts, m_MousePosition, Core::Application::Get().GetWindow()->GetHandle());
+
+    m_ActiveScene->OnUpdate(ts);
+
+    //TODO: Rework ALLLL of this so that camera movement and positioning is handled by the entity transform natively, instead of doing this hacky shit
     //Mouse Input
 
 }
@@ -109,8 +171,14 @@ void AppLayer::OnRender()
     newShader.setMatrix4("projection", projection);
     newShader.setMatrix4("view", view);
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, -5.0f, 0.0f)); // translate it down so it's at the center of the scene
-    model = glm::scale(model, glm::vec3(1.0f/32.0f, 1.0f/32.0f, 1.0f/32.0f));	// it's a bit too big for our scene, so scale it down
+
+    auto& tc = m_CurrentLevel.GetComponent<TransformComponent>();
+
+
+
+    model = tc.GetTransform();
+
+
     newShader.setMatrix4("model", model);
 
 
@@ -181,6 +249,13 @@ bool AppLayer::OnKeyPressed(Core::KeyPressedEvent& event)
         glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         m_InputManager->set_cursor(false);
     }
+    if(event.GetKeyCode() == GLFW_KEY_O)
+    {
+        //Re-enable cursor, and signal the Input Manager that the cursor is unlocked.
+        glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        m_InputManager->set_cursor(true);
+    }
+
     return false;
 }
 
