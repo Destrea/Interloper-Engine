@@ -189,6 +189,9 @@ namespace Core
             {
                 auto& cameraComponent = entity.GetComponent<CameraComponent>();
 
+                //Add the new reworked camera components here in place of the commented options
+
+                /*
                 DrawVec3Control("Position", cameraComponent.p_Camera.Position);
                 glm::vec3 localrot = glm::degrees(cameraComponent.p_Camera.LocalRotation);
                 DrawVec3Control("LocalRotation", localrot);
@@ -196,7 +199,7 @@ namespace Core
                 //DrawVec3Control("Rotation", glm::vec3(cameraComponent.p_Camera.Yaw, cameraComponent.p_Camera.Pitch, 1.0f));
                 ImGui::Text("Yaw: %f", cameraComponent.p_Camera.Yaw);
                 ImGui::Text("Pitch: %f", cameraComponent.p_Camera.Pitch);
-
+                */
                 ImGui::TreePop();
             }
 

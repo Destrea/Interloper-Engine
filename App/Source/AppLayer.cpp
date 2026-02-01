@@ -31,8 +31,10 @@ AppLayer::AppLayer()
     Entity m_Player = m_ActiveScene->CreateEntity("Player");
     //m_Player.AddComponent<CameraComponent>(glm::vec3{0.0f,3.0f,0.0f});
     auto& playerTransform = m_Player.GetComponent<TransformComponent>();
-    m_Player.AddComponent<CameraComponent>(playerTransform.Translation, playerTransform.Rotation);
-
+    //m_Player.AddComponent<CameraComponent>(playerTransform.Translation, playerTransform.Rotation);
+    m_Player.AddComponent<CameraComponent>();
+    auto& playerCamera = m_Player.GetComponent<CameraComponent>();
+    playerCamera.p_Camera.SetTransform(playerTransform.Translation, playerTransform.Rotation, playerTransform.Scale);
 
     m_PlayerEntity = m_Player;
 
@@ -53,8 +55,9 @@ AppLayer::AppLayer()
     //MapData test1("Resources/Maps/Test1.map");
 
     //Set player camera position and transform
-    m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Position += m_TestMap.GetComponent<MapDataComponent>().data.playerSpawn;
-    m_PlayerEntity.GetComponent<TransformComponent>().Translation = glm:: vec4(m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Position, 1.0f);
+
+    m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.SetPosition(m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.GetPosition() + m_TestMap.GetComponent<MapDataComponent>().data.playerSpawn);
+    m_PlayerEntity.GetComponent<TransformComponent>().Translation = glm:: vec4(m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.GetPosition(), 1.0f);
 
     m_CurrentLevel = m_TestMap;
     auto& levelTC = m_CurrentLevel.GetComponent<TransformComponent>();
@@ -80,7 +83,7 @@ AppLayer::AppLayer()
         void OnUpdate(float ts)
         {
             auto& tc = GetComponent<TransformComponent>();
-            auto& position = GetComponent<CameraComponent>().p_Camera.Position;
+            auto& cc = GetComponent<CameraComponent>();
 
             //TODO: Figure this out, after reworking the camera system, so that each object can be scripted independently
 
@@ -95,7 +98,9 @@ AppLayer::AppLayer()
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
                 tc.Translation.z += speed * ts;
 
-            position = tc.Translation;
+            //Might not even need this anymore
+            cc.p_Camera.SetPosition(tc.Translation);
+            //position = tc.Translation;
 
 
 
