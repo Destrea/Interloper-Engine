@@ -90,6 +90,8 @@ AppLayer::AppLayer()
 
             //TODO: Figure this out, after reworking the camera system, so that each object can be scripted independently
 
+            /*
+
             float speed = 7.0f;
             GLFWwindow* window = Core::Application::Get().GetWindow()->GetHandle();
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -101,6 +103,7 @@ AppLayer::AppLayer()
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
                 tc.Translation.z += speed * ts;
 
+            */
             //Might not even need this anymore
             cc.p_Camera.SetPosition(tc.Translation);
             //position = tc.Translation;
@@ -174,7 +177,7 @@ void AppLayer::OnRender()
     //glm::mat4 projection = glm::perspective(glm::radians(m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Zoom), (float)800 / (float)600, 0.1f, 100.0f);
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
-    glm::mat4 view = m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.GetViewMatrix();
+    glm::mat4 view = m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.GetViewMatrix2();
 
     newShader.setMatrix4("projection", projection);
     newShader.setMatrix4("view", view);

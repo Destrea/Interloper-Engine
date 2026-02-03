@@ -191,15 +191,21 @@ namespace Core
 
                 //Add the new reworked camera components here in place of the commented options
 
-                /*
-                DrawVec3Control("Position", cameraComponent.p_Camera.Position);
-                glm::vec3 localrot = glm::degrees(cameraComponent.p_Camera.LocalRotation);
+
+                DrawVec3Control("Position", cameraComponent.p_Camera.m_Position);
+
+                glm::vec3 localrot = glm::degrees(cameraComponent.p_Camera.m_Rotation);
                 DrawVec3Control("LocalRotation", localrot);
-                cameraComponent.p_Camera.LocalRotation = glm::radians(localrot);
-                //DrawVec3Control("Rotation", glm::vec3(cameraComponent.p_Camera.Yaw, cameraComponent.p_Camera.Pitch, 1.0f));
-                ImGui::Text("Yaw: %f", cameraComponent.p_Camera.Yaw);
-                ImGui::Text("Pitch: %f", cameraComponent.p_Camera.Pitch);
-                */
+                cameraComponent.p_Camera.m_Rotation = glm::radians(localrot);
+
+                glm::vec3 camFront = cameraComponent.p_Camera.GetCameraFront();
+                DrawVec3Control("CameraFront", camFront);
+                glm::vec3 camUp = cameraComponent.p_Camera.GetCameraUp();
+                DrawVec3Control("CameraUp", camUp);
+                glm::vec3 worldUp = cameraComponent.p_Camera.GetWorldUp();
+                DrawVec3Control("WorldUp", worldUp);
+
+
                 ImGui::TreePop();
             }
 

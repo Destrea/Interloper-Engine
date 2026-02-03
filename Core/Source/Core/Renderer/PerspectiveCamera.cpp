@@ -14,7 +14,8 @@ namespace Renderer
     PerspectiveCamera::PerspectiveCamera()
     {
         m_ProjectionMatrix = glm::perspective(m_PerspectiveFOV, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
-
+        m_WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+        m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
     }
 
     PerspectiveCamera::PerspectiveCamera(glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
@@ -51,24 +52,29 @@ namespace Renderer
 
     void PerspectiveCamera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
     {
-        float MouseSensitivity = 1.0f;
+        float MouseSensitivity = 0.10f;
         glm::vec3 LocalRotation = glm::degrees(m_Rotation);
         xoffset *= MouseSensitivity;
         yoffset *= MouseSensitivity;
 
-        LocalRotation.x += xoffset;
-        LocalRotation.y += yoffset;
+        //TODO: Figure out why the hell these are switched wrong.
+        // Maybe because of the way I'm composing the view matrix?
+
+        //Yaw, y axis rotation, left/right camera
+        LocalRotation.y += xoffset;
+        //Pitch, x axis rotation, up/down camera
+        LocalRotation.x += yoffset;
 
         if(constrainPitch)
         {
-            if(LocalRotation.y > 89.0f)
-                LocalRotation.y = 89.0f;
-            if(LocalRotation.y < -89.0f)
-                LocalRotation.y = -89.0f;
+            if(LocalRotation.x > 89.0f)
+                LocalRotation.x = 89.0f;
+            if(LocalRotation.x < -89.0f)
+                LocalRotation.x = -89.0f;
         }
         m_Rotation = glm::radians(LocalRotation);
 
-        RecalculateViewMatrix();
+        RecalculateDirectionalVectors();
     }
 
 
@@ -86,17 +92,22 @@ namespace Renderer
         //Transform is then inverted to give us the camera's view matrix
         m_ViewMatrix = glm::inverse(transform);
         m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+
     }
 
     void PerspectiveCamera::RecalculateDirectionalVectors()
     {
         //Temporary var for front, for calculating the directional vectors
         glm::vec3 front;
-        front.x = cos(m_Rotation.x) * cos(m_Rotation.y);
-        front.y = sin(m_Rotation.y);
-        front.z = sin(m_Rotation.x) * cos(m_CameraFront.y);
+        front.x = cos(m_Rotation.y) * cos(m_Rotation.x);
+        front.y = sin(m_Rotation.x);
+        front.z = sin(m_Rotation.y) * cos(m_Rotation.x);
 
         //Recalculate the Front, Right and Up vectors, normalizing them
+
+        //CameraFront and WorldUp entirely cancel eachother out when looking up or down, because camera front will be (0,-1,0), and up will be (0,-1,0)
+        //So doing the cross product gives a vector of like (0,0,0)
+        //TODO: Fix this!!
         m_CameraFront = glm::normalize(front);
         m_CameraRight = glm::normalize(glm::cross(m_CameraFront, m_WorldUp));
         m_CameraUp = glm::normalize(glm::cross(m_CameraRight, m_CameraFront));

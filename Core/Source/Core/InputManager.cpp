@@ -97,31 +97,39 @@ namespace Core {
         auto& tc = playerEntity.GetComponent<TransformComponent>();
         auto& cc = playerEntity.GetComponent<CameraComponent>();
 
+        glm::vec3 Front = cc.p_Camera.GetCameraFront();
+        glm::vec3 Right = cc.p_Camera.GetCameraRight();
+        glm::vec3 Up = cc.p_Camera.GetCameraUp();
+
+
         //Process Mouse Input
         processMouseInput(&cc.p_Camera, mousePos.x, mousePos.y);
         //Process Keyboard Input
         float speed = 7.0f;
 
         /*
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            cc.p_Camera.ProcessKeyboard(FORWARD, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            cc.p_Camera.ProcessKeyboard(BACKWARD, deltaTime);
+         i f (glfwGetKey(window, GLFW_KEY_W) == GLF*W_PRESS)
+         tc.Translation.z -= speed * deltaTime;
+         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+             tc.Translation.z += speed * deltaTime;
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            cc.p_Camera.ProcessKeyboard(LEFT, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            cc.p_Camera.ProcessKeyboard(RIGHT, deltaTime);
-    */
-
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            tc.Translation.x += speed * deltaTime;
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
             tc.Translation.x -= speed * deltaTime;
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            tc.Translation.z -= speed * deltaTime;
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            tc.Translation.z += speed * deltaTime;
+            tc.Translation.x += speed * deltaTime;
+        */
 
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            tc.Translation += Front * speed * deltaTime;
+
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            tc.Translation -= Front * speed * deltaTime;
+
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            tc.Translation -= Right * speed * deltaTime;
+
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            tc.Translation += Right * speed * deltaTime;
+        tc.Translation.y = 3.0f;
     }
 
 
