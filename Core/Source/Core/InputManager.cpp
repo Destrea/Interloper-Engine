@@ -81,7 +81,7 @@ namespace Core {
             lastX = xpos;
             lastY = ypos;
 
-            //p_Camera->ProcessMouseMovement(xOffset, yOffset);
+            p_Camera->ProcessMouseMovement(xOffset, yOffset);
         }
         else
         {

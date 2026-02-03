@@ -24,6 +24,8 @@ namespace Renderer
         void SetProjection(glm::mat4 ProjectionMatrixIN);
         void RecalculateProjectionMatrix();
 
+        void RecalculateDirectionalVectors();
+
         void SetAspectRatio(uint32_t width, uint32_t height);
 
         const glm::vec3& GetPosition() const {return m_Position; }
@@ -34,10 +36,17 @@ namespace Renderer
 
         void SetTransform(glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale);
 
+
+        void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
+
         const glm::mat4& GetProjectionMatrx() const {return m_ProjectionMatrix; }
         const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
         const glm::mat4& GetViewProjectionMatrix() const {return m_ViewProjectionMatrix; }
 
+
+        //TODO: Add a class function, either for moving the camera, or for returning the directional vectors, so that other classes and functions can use them.
+
+        //TODO: Update/remove the keyboard and mouse controls from InputManager, as needed. Clean it all up so that all of the mouse/keyboard input can be "centalized", to make it easy to keep up with what/who/where things are being controlled from.
 
 
 
@@ -54,6 +63,12 @@ namespace Renderer
         glm::vec3 m_Position = {0.0f, 0.0f, 0.0f};
         glm::vec3 m_Rotation = {0.0f, 0.0f, 0.0f};
         glm::vec3 m_Scale    = {1.0f, 1.0f, 1.0f};
+
+        //Camera Directional Vectors
+        glm::vec3 m_CameraFront;
+        glm::vec3 m_CameraRight;
+        glm::vec3 m_CameraUp;
+        glm::vec3 m_WorldUp = {0.0f, 1.0f, 0.0f};
 
         //Clipping distances, near and far
         float m_PerspectiveNear = 0.01f;

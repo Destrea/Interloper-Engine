@@ -79,13 +79,6 @@ namespace Core
         CameraComponent(glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale) : p_Camera(translation, rotation, scale) {}
 
 
-        //Renderer::Camera Camera;
-
-        /*OrthographicCamera p_Camera;
-        CameraComponent() = default;
-        CameraComponent(const CameraComponent&) = default;
-        CameraComponent(const glm::mat4& projection) : Camera(projection) {}
-        */
     };
 
     struct NativeScriptComponent

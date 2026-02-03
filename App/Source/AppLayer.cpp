@@ -35,6 +35,9 @@ AppLayer::AppLayer()
     m_Player.AddComponent<CameraComponent>();
     auto& playerCamera = m_Player.GetComponent<CameraComponent>();
     playerCamera.p_Camera.SetTransform(playerTransform.Translation, playerTransform.Rotation, playerTransform.Scale);
+    playerCamera.p_Camera.SetAspectRatio(1920, 1080);
+
+
 
     m_PlayerEntity = m_Player;
 

@@ -23,8 +23,6 @@ namespace Renderer
         m_ProjectionMatrix = glm::perspective(m_PerspectiveFOV, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
     }
 
-
-
     void PerspectiveCamera::SetProjection(glm::mat4 ProjectionMatrixIN)
     {
         m_ProjectionMatrix = ProjectionMatrixIN;
@@ -51,6 +49,28 @@ namespace Renderer
         RecalculateViewMatrix();
     }
 
+    void PerspectiveCamera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
+    {
+        float MouseSensitivity = 1.0f;
+        glm::vec3 LocalRotation = glm::degrees(m_Rotation);
+        xoffset *= MouseSensitivity;
+        yoffset *= MouseSensitivity;
+
+        LocalRotation.x += xoffset;
+        LocalRotation.y += yoffset;
+
+        if(constrainPitch)
+        {
+            if(LocalRotation.y > 89.0f)
+                LocalRotation.y = 89.0f;
+            if(LocalRotation.y < -89.0f)
+                LocalRotation.y = -89.0f;
+        }
+        m_Rotation = glm::radians(LocalRotation);
+
+        RecalculateViewMatrix();
+    }
+
 
     void PerspectiveCamera::RecalculateViewMatrix()
     {
@@ -66,6 +86,21 @@ namespace Renderer
         //Transform is then inverted to give us the camera's view matrix
         m_ViewMatrix = glm::inverse(transform);
         m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+    }
+
+    void PerspectiveCamera::RecalculateDirectionalVectors()
+    {
+        //Temporary var for front, for calculating the directional vectors
+        glm::vec3 front;
+        front.x = cos(m_Rotation.x) * cos(m_Rotation.y);
+        front.y = sin(m_Rotation.y);
+        front.z = sin(m_Rotation.x) * cos(m_CameraFront.y);
+
+        //Recalculate the Front, Right and Up vectors, normalizing them
+        m_CameraFront = glm::normalize(front);
+        m_CameraRight = glm::normalize(glm::cross(m_CameraFront, m_WorldUp));
+        m_CameraUp = glm::normalize(glm::cross(m_CameraRight, m_CameraFront));
+
     }
 
 
