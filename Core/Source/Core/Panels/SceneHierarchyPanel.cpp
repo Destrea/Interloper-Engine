@@ -202,6 +202,9 @@ namespace Core
                 DrawVec3Control("CameraFront", camFront);
                 glm::vec3 camUp = cameraComponent.p_Camera.GetCameraUp();
                 DrawVec3Control("CameraUp", camUp);
+                glm::vec3 camRight = cameraComponent.p_Camera.GetCameraRight();
+                DrawVec3Control("CameraRight", camRight);
+
                 glm::vec3 worldUp = cameraComponent.p_Camera.GetWorldUp();
                 DrawVec3Control("WorldUp", worldUp);
 

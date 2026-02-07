@@ -118,15 +118,15 @@ namespace Core {
             tc.Translation.x += speed * deltaTime;
         */
 
+
+        //Instead of using "camera front", we should base it off the camera's rotation along the y axis
+
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             tc.Translation += Front * speed * deltaTime;
-
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
             tc.Translation -= Front * speed * deltaTime;
-
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
             tc.Translation -= Right * speed * deltaTime;
-
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             tc.Translation += Right * speed * deltaTime;
         tc.Translation.y = 3.0f;

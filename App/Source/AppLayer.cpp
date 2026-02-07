@@ -162,6 +162,8 @@ void AppLayer::OnUpdate(float ts)
 
     m_ActiveScene->OnUpdate(ts);
 
+    m_PlayerEntity.GetComponent<TransformComponent>().Rotation = m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.m_Rotation;
+
     //TODO: Rework ALLLL of this so that camera movement and positioning is handled by the entity transform natively, instead of doing this hacky shit
     //Mouse Input
 

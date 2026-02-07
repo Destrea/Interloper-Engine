@@ -15,7 +15,9 @@ namespace Renderer
     {
         m_ProjectionMatrix = glm::perspective(m_PerspectiveFOV, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
         m_WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+        m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
         m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+        RecalculateDirectionalVectors();
     }
 
     PerspectiveCamera::PerspectiveCamera(glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
@@ -45,6 +47,7 @@ namespace Renderer
     {
         m_Position = translation;
         m_Rotation = rotation;
+        m_Rotation.y = -90.0f;
         m_Scale = scale;
 
         RecalculateViewMatrix();
@@ -80,6 +83,7 @@ namespace Renderer
 
     void PerspectiveCamera::RecalculateViewMatrix()
     {
+        /*
         //Rotation calculation, for the transform mat4
         glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), m_Rotation.x, {1,0,0})
         * glm::rotate(glm::mat4(1.0f), m_Rotation.y, {0,1,0})
@@ -92,6 +96,9 @@ namespace Renderer
         //Transform is then inverted to give us the camera's view matrix
         m_ViewMatrix = glm::inverse(transform);
         m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+        */
+
+         m_ViewMatrix2 = glm::lookAt(m_Position, m_Position + m_CameraFront, m_WorldUp);
 
     }
 
@@ -108,9 +115,10 @@ namespace Renderer
         //CameraFront and WorldUp entirely cancel eachother out when looking up or down, because camera front will be (0,-1,0), and up will be (0,-1,0)
         //So doing the cross product gives a vector of like (0,0,0)
         //TODO: Fix this!!
+
         m_CameraFront = glm::normalize(front);
         m_CameraRight = glm::normalize(glm::cross(m_CameraFront, m_WorldUp));
-        m_CameraUp = glm::normalize(glm::cross(m_CameraRight, m_CameraFront));
+        m_CameraUp = glm::normalize(glm::cross(m_CameraFront, m_CameraRight));
 
     }
 
