@@ -15,6 +15,7 @@ namespace Core
         void OnUpdate(float ts);
 
         Entity CreateEntity(const std::string& name = std::string());
+        void DestroyEntity(Entity entity);
     private:
         entt::registry m_Registry;
 

@@ -44,6 +44,18 @@ namespace Core
             }
 
 
+            //Right click on a blank space. For creating new entitites
+
+            if(ImGui::BeginPopupContextWindow(0, 1 | ImGuiPopupFlags_NoOpenOverItems)  )
+            {
+                //Missing "over_item" boolean input. Find an alternative
+                if(ImGui::MenuItem("Create Empty Entity"))
+                {
+                    m_Context->CreateEntity("Empty Entity");
+                }
+                ImGui::EndPopup();
+            }
+
         }
         ImGui::End();
 
@@ -70,11 +82,37 @@ namespace Core
             m_SelectionContext = entity;
         }
 
+
+        bool entityDeleted = false;
+        if(ImGui::BeginPopupContextItem())
+        {
+            //Missing "over_item" boolean input. Find an alternative
+            if(ImGui::MenuItem("Delete Entity"))
+                entityDeleted = true;
+
+            ImGui::EndPopup();
+        }
+
+        //TODO: Fix issue with certain entities being deleted causing a crash.
+        //This seems to happen mostly on entities with components other than a tag/transform
+
+
         if(opened)
         {
-            //TODO: Display child entities when the node selected has some
+            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+            bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
+            if(opened)
+                ImGui::TreePop();
 
             ImGui::TreePop();
+        }
+
+        //Defer deletion until the end of the frame.
+        if(entityDeleted)
+        {
+            m_Context->DestroyEntity(entity);
+            if(m_SelectionContext == entity)
+                m_SelectionContext = {};
         }
 
     }
