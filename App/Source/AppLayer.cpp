@@ -67,6 +67,8 @@ AppLayer::AppLayer()
     levelTC.Scale = glm::vec3(1.0f/32.0f,1.0f/32.0f,1.0f/32.0f);
     levelTC.Translation = glm::vec3(0.0f, 0.0f, 0.0f);
 
+    m_CurrentLevel.GetComponent<ModelComponent>().EntityShader = Core::ResourceManager::GetShader("test");;
+
 
     class CameraController : public ScriptableEntity
     {
@@ -181,18 +183,21 @@ void AppLayer::OnRender()
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
     glm::mat4 view = m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.GetViewMatrix2();
 
-    newShader.setMatrix4("projection", projection);
-    newShader.setMatrix4("view", view);
-    glm::mat4 model = glm::mat4(1.0f);
-
-    auto& tc = m_CurrentLevel.GetComponent<TransformComponent>();
+    //newShader.setMatrix4("projection", projection);
+    //newShader.setMatrix4("view", view);
 
 
+    //auto& tc = m_CurrentLevel.GetComponent<TransformComponent>();
 
-    model = tc.GetTransform();
+
+    //Iterate through entities in scene, and draw them
 
 
-    newShader.setMatrix4("model", model);
+    //glm::mat4 model = glm::mat4(1.0f);
+    //model = tc.GetTransform();
+
+
+    //newShader.setMatrix4("model", model);
 
 
 
@@ -202,8 +207,19 @@ void AppLayer::OnRender()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    newShader.Use();
-    maps[0].GetComponent<ModelComponent>().EntityModel.Draw(newShader);
+    //newShader.Use();
+
+
+
+    //New Rendering code test
+
+
+
+
+    m_ActiveScene->OnRender(projection, view);
+
+
+    //maps[0].GetComponent<ModelComponent>().EntityModel.Draw(newShader);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

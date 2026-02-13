@@ -8,6 +8,11 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+//Temporary
+#include "Core/Renderer/Shader.h"
+#include "Core/ResourceManager.h"
+#include "Core/Renderer/Texture.h"
+
 namespace Core
 {
     SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
@@ -59,11 +64,52 @@ namespace Core
         }
         ImGui::End();
 
-
         ImGui::Begin("Properties");
         if(m_SelectionContext)
         {
             DrawComponents(m_SelectionContext);
+
+            if (ImGui::Button("Add Component"))
+                ImGui::OpenPopup("AddComponent");
+
+            if(ImGui::BeginPopup("AddComponent"))
+            {
+                if(ImGui::MenuItem("Camera"))
+                {
+                    m_SelectionContext.AddComponent<CameraComponent>();
+                    ImGui::CloseCurrentPopup();
+                }
+
+                if(ImGui::MenuItem("Model Renderer"))
+                {
+                    //Open A menu to select the 3D Model that you want
+                    //It'll take the path to the file you selected, and pass it into the ModelComponent Constructor.
+                    //If nothing is provided, It'll default to a basic Cube.
+
+                    //TODO: Implement model/file selction UI, and Update this to use it!
+
+                    std::string path;
+
+                    m_SelectionContext.AddComponent<ModelComponent>("Resources/DefaultModels/DefaultCube.obj");
+                    //Add a placeholder Shader to it here.
+
+                    Renderer::Shader Othershader = Core::ResourceManager::LoadShader("Resources/Shaders/defaultVertex.glsl", "Resources/Shaders/defaultFragment.glsl", "test");
+
+                    Renderer::Texture2D texture = Core::ResourceManager::LoadTexture("Resources/Textures/Debugempty.png", false, "wallTest");
+                    Othershader.setInteger("testTex", texture.ID);
+
+                    m_SelectionContext.GetComponent<ModelComponent>().EntityShader = Othershader;
+
+                    ImGui::CloseCurrentPopup();
+                }
+
+
+
+                ImGui::EndPopup();
+            }
+
+
+
         }
 
         ImGui::End();
@@ -92,9 +138,6 @@ namespace Core
 
             ImGui::EndPopup();
         }
-
-        //TODO: Fix issue with certain entities being deleted causing a crash.
-        //This seems to happen mostly on entities with components other than a tag/transform
 
 
         if(opened)

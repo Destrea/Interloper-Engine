@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "Entity.h"
 #include "Components.h"
-#include <glm/glm.hpp>
+//#include <glm/glm.hpp>
 
 
 namespace Core
@@ -44,14 +44,49 @@ namespace Core
             });
         }
 
-        //Scene Camera and rendering code here
+
+
+        //TODO: Add Scene::OnUpdate() and update the camera class
+        //This will allow you to create a "scene" camera, independant from the player camera, and handle all the rendering, per-scene, rather than having all of the currently loaded scenes be rendered every frame.
+
+    }
+
+    //Scene rendering pass
+    void Scene::OnRender(glm::mat4 projection, glm::mat4 view)
+    {
+
+        //Renders all Entities in the scene that contain a ModelComponent
+        m_Registry.view<ModelComponent, TransformComponent>().each([&](auto entityID, auto &mc, auto &tc)
+        {
+            //creates an Entity object using the entityID the iterator found
+            Entity entity{entityID, this};
+
+            //Takes the shader object and passes it into the Draw function of each ModelComponent, for rendering
+            auto& EntityModel = mc;
+            Renderer::Shader EntityShader = EntityModel.EntityShader;
+
+            //Activate the current entity's shader
+            EntityShader.Use();
+
+            //Pass the model/projection/view matrices to the shader
+            glm::mat4 model = glm::mat4(1.0f);
+            model = entity.GetComponent<TransformComponent>().GetTransform();
+            EntityShader.setMatrix4("model", model);
+            EntityShader.setMatrix4("projection", projection);
+            EntityShader.setMatrix4("view", view);
+
+
+            //Draws the entity's model, using the shader
+            mc.EntityModel.Draw(EntityShader);
+
+
+        });
 
     }
 
 
 
-    //TODO: Add Scene::OnUpdate() and update the camera class
-            //This will allow you to create a "scene" camera, independant from the player camera, and handle all the rendering, per-scene, rather than having all of the currently loaded scenes be rendered every frame.
+
 
     Entity Scene::CreateEntity(const std::string& name)
     {

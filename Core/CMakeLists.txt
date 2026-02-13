@@ -97,3 +97,9 @@ target_link_libraries(Core assimp)
 
 target_include_directories(Core PUBLIC "Source" "vendor/stb" "vendor/glad/include" "vendor/ImGui" "vendor/entt/include")
 
+add_custom_target(copy_core_res ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${PROJECT_SOURCE_DIR}/Core/Res
+    ${PROJECT_BINARY_DIR}/Core/Res
+    COMMENT "Copying Core resources into binary directory")
+

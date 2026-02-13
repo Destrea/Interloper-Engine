@@ -8,6 +8,7 @@
 #include "Core/Renderer/Camera.h"
 #include "ScriptableEntity.h"
 #include "Core/MapLoader.h"
+#include "Core/Renderer/Shader.h"
 
 using namespace Renderer;
 
@@ -53,6 +54,7 @@ namespace Core
 
         //Fix this all so that it actually loads the model specified
         Renderer::Model EntityModel;
+        Renderer::Shader EntityShader;
 
         ModelComponent() = default;
         ModelComponent(const ModelComponent&) = default;
