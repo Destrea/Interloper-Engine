@@ -13,7 +13,7 @@ namespace Core
         ~Scene();
 
         void OnUpdate(float ts);
-        void OnRender(glm::mat4 projection, glm::mat4 view);
+        void OnRender();
 
 
         Entity CreateEntity(const std::string& name = std::string());

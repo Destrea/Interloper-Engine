@@ -28,6 +28,7 @@ public:
     virtual void OnUpdate(float ts) override;
     virtual void OnRender() override;
     std::vector<Core::Entity> maps;
+    glm::vec2 m_MousePosition { 0.0f};
 
 private:
     bool OnMouseButtonPressed(Core::MouseButtonPressedEvent& event);
@@ -49,7 +50,7 @@ private:
     Core::Entity m_CurrentLevel;
     Core::Entity m_PlayerEntity;
 
-    glm::vec2 m_MousePosition { 0.0f};
+
 
     float deltaTime = 0.0;
     friend class EditorLayer;

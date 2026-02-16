@@ -12,6 +12,7 @@
 #include "Core/Renderer/Shader.h"
 #include "Core/ResourceManager.h"
 #include "Core/Renderer/Texture.h"
+#include "Core/Application.h"
 
 namespace Core
 {
@@ -77,6 +78,11 @@ namespace Core
                 if(ImGui::MenuItem("Camera"))
                 {
                     m_SelectionContext.AddComponent<CameraComponent>();
+                    auto selectionTC = m_SelectionContext.GetComponent<TransformComponent>();
+                    auto selectionCC = m_SelectionContext.GetComponent<CameraComponent>();
+                    selectionCC.p_Camera.SetTransform(selectionTC.Translation, selectionTC.Rotation, selectionTC.Scale);
+                    selectionCC.p_Camera.SetAspectRatio(1920, 1080);
+
                     ImGui::CloseCurrentPopup();
                 }
 
@@ -93,13 +99,67 @@ namespace Core
                     m_SelectionContext.AddComponent<ModelComponent>("Resources/DefaultModels/DefaultCube.obj");
                     //Add a placeholder Shader to it here.
 
-                    Renderer::Shader Othershader = Core::ResourceManager::LoadShader("Resources/Shaders/defaultVertex.glsl", "Resources/Shaders/defaultFragment.glsl", "test");
-
-                    Renderer::Texture2D texture = Core::ResourceManager::LoadTexture("Resources/Textures/Debugempty.png", false, "wallTest");
-                    Othershader.setInteger("testTex", texture.ID);
+                    Renderer::Shader Othershader = Core::ResourceManager::GetShader("Shader1");
+                    Renderer::Texture2D myTexture = Core::ResourceManager::GetTexture("wallTest");
+                    Othershader.setInteger("testTex", myTexture.ID);
 
                     m_SelectionContext.GetComponent<ModelComponent>().EntityShader = Othershader;
 
+                    ImGui::CloseCurrentPopup();
+                }
+
+                if(ImGui::MenuItem("Native Script Component"))
+                {
+                    //TODO: Maybe make a "Scripting Components" file with all of the script classes
+
+                    class CameraController : public ScriptableEntity
+                    {
+                    public:
+                        void OnCreate()
+                        {
+                            //printf("CameraController::OnCreate!");
+                            //std::cout << "CameraController::OnCreate!" << std::endl;
+                            //printf("CameraController::OnCreate!");
+                        }
+
+                        void OnDestroy()
+                        {
+
+                        }
+
+                        void OnUpdate(float ts)
+                        {
+                            /*
+                            GLFWwindow* window = Core::Application::Get().GetWindow()->GetHandle();
+                            //glm::vec2 mousePos = m_MousePosition;
+                            auto& tc = GetComponent<TransformComponent>();
+                            auto& cc = GetComponent<CameraComponent>();
+                            float speed = 7.0f;
+
+
+                            glm::vec3 Front = cc.p_Camera.GetCameraFront();
+                            glm::vec3 Right = cc.p_Camera.GetCameraRight();
+                            glm::vec3 Up = cc.p_Camera.GetCameraUp();
+
+                            //TODO: Figure out how to dynamically add Native Scripts to entities, so that you can use this CameraController to move the player/camera
+
+                            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+                                tc.Translation += Front * speed * ts;
+                            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+                                tc.Translation -= Front * speed * ts;
+                            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+                                tc.Translation -= Right * speed * ts;
+                            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+                                tc.Translation += Right * speed * ts;
+                            tc.Translation.y = 3.0f;
+
+                            //m_InputManager->processMouseInput(&cc.p_Camera, m_MousePosition.x, m_MousePosition.y);
+
+                            */
+                        }
+                    };
+
+                    m_SelectionContext.AddComponent<NativeScriptComponent>(new CameraController());
                     ImGui::CloseCurrentPopup();
                 }
 
@@ -247,26 +307,34 @@ namespace Core
             }
         }
 
+        const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
+
+
         if(entity.HasComponent<TransformComponent>())
         {
-            if(ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform" ))
+            bool open = ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), treeNodeFlags, "Transform" );
+
+
+            if(open)
             {
-            //TODO: Return to add more to Transform Components :)
-            //TODO: Ensure that all entities are actually handled/modified using their transform components, instead of their old "local" position variables
-            auto& tc = entity.GetComponent<TransformComponent>();
-            DrawVec3Control("Translation", tc.Translation);
-            glm::vec3 rotation = glm::degrees(tc.Rotation);
-            DrawVec3Control("Rotation", rotation);
-            tc.Rotation = glm::radians(rotation);
-            DrawVec3Control("Scale", tc.Scale, 1.0f);
-            ImGui::TreePop();
+                auto& tc = entity.GetComponent<TransformComponent>();
+                DrawVec3Control("Translation", tc.Translation);
+                glm::vec3 rotation = glm::degrees(tc.Rotation);
+                DrawVec3Control("Rotation", rotation);
+                tc.Rotation = glm::radians(rotation);
+                DrawVec3Control("Scale", tc.Scale, 1.0f);
+                ImGui::TreePop();
             }
+
 
         }
 
+        //TODO: Add actual Settings for CameraComponent
+        //TODO: Rework editor camera, fix camera deletion bug
+
         if(entity.HasComponent<CameraComponent>())
         {
-            if(ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera" ))
+            if(ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), treeNodeFlags, "Camera" ))
             {
                 auto& cameraComponent = entity.GetComponent<CameraComponent>();
 
@@ -294,6 +362,54 @@ namespace Core
             }
 
         }
+
+
+
+
+        if(entity.HasComponent<ModelComponent>())
+        {
+
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4,4});
+            bool open = ImGui::TreeNodeEx((void*)typeid(ModelComponent).hash_code(), treeNodeFlags, "Model Component");
+
+            ImGui::SameLine(ImGui::GetWindowWidth() - 25.0f);
+            if(ImGui::Button("+", ImVec2 {20,20}))
+            {
+                ImGui::OpenPopup("ComponentSettings");
+            }
+            ImGui::PopStyleVar();
+
+            bool removeComponent = false;
+            if(ImGui::BeginPopup("ComponentSettings"))
+            {
+                if(ImGui::MenuItem("Remove Component"))
+                    removeComponent = true;
+
+                ImGui::EndPopup();
+            }
+
+            if(open)
+            {
+                ImGui::Text("Model Component Placeholder");
+                ImGui::TreePop();
+            }
+
+            if(removeComponent)
+                entity.RemoveComponent<ModelComponent>();
+        }
+
+
+        if(entity.HasComponent<NativeScriptComponent>())
+        {
+            bool open = ImGui::TreeNodeEx((void*)typeid(NativeScriptComponent).hash_code(), treeNodeFlags, "Scriptable Entity");
+            if(open)
+            {
+               ImGui::Text("NativeScriptComponent Placeholder");
+               ImGui::TreePop();
+            }
+
+        }
+
 
 
     }

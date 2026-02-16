@@ -70,6 +70,12 @@ AppLayer::AppLayer()
     m_CurrentLevel.GetComponent<ModelComponent>().EntityShader = Core::ResourceManager::GetShader("test");;
 
 
+    Renderer::Shader Othershader = Core::ResourceManager::LoadShader("Resources/Shaders/defaultVertex.glsl", "Resources/Shaders/defaultFragment.glsl", "Shader1");
+
+    Renderer::Texture2D texture = Core::ResourceManager::LoadTexture("Resources/Textures/Debugempty.png", false, "wallTest");
+    Othershader.setInteger("testTex", texture.ID);
+
+
     class CameraController : public ScriptableEntity
     {
     public:
@@ -87,31 +93,30 @@ AppLayer::AppLayer()
 
         void OnUpdate(float ts)
         {
+            GLFWwindow* window = Core::Application::Get().GetWindow()->GetHandle();
+            //glm::vec2 mousePos = &m_MousePosition;
             auto& tc = GetComponent<TransformComponent>();
             auto& cc = GetComponent<CameraComponent>();
+            float speed = 7.0f;
+
+
+            glm::vec3 Front = cc.p_Camera.GetCameraFront();
+            glm::vec3 Right = cc.p_Camera.GetCameraRight();
+            glm::vec3 Up = cc.p_Camera.GetCameraUp();
 
             //TODO: Figure this out, after reworking the camera system, so that each object can be scripted independently
 
-            /*
-
-            float speed = 7.0f;
-            GLFWwindow* window = Core::Application::Get().GetWindow()->GetHandle();
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-                tc.Translation.x += speed * ts;
+                tc.Translation += Front * speed * ts;
             if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-                tc.Translation.x -= speed * ts;
+                tc.Translation -= Front * speed * ts;
             if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-                tc.Translation.z -= speed * ts;
+                tc.Translation -= Right * speed * ts;
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-                tc.Translation.z += speed * ts;
+                tc.Translation += Right * speed * ts;
+            tc.Translation.y = 3.0f;
 
-            */
-            //Might not even need this anymore
-            cc.p_Camera.SetPosition(tc.Translation);
-            //position = tc.Translation;
-
-
-
+            //processMouseInput(&cc.p_Camera, mousePos.x, mousePos.y);
 
             //tc.Translation = glm::vec4(position,1.0f);
 
@@ -120,7 +125,7 @@ AppLayer::AppLayer()
         }
     };
 
-    m_PlayerEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+    //m_PlayerEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
     //m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Transform = m_PlayerEntity.GetComponent<TransformComponent>().Transform;
 
@@ -160,11 +165,13 @@ void AppLayer::OnUpdate(float ts)
     //Keyboard Input
     //m_InputManager->processKeyboardInput(Core::Application::Get().GetWindow()->GetHandle(), &m_PlayerEntity.GetComponent<CameraComponent>().p_Camera, ts);
     //m_InputManager->processMouseInput(&m_PlayerEntity.GetComponent<CameraComponent>().p_Camera, m_MousePosition.x, m_MousePosition.y);
-    m_InputManager->processPlayerInput(m_PlayerEntity, ts, m_MousePosition, Core::Application::Get().GetWindow()->GetHandle());
 
     m_ActiveScene->OnUpdate(ts);
-
-    m_PlayerEntity.GetComponent<TransformComponent>().Rotation = m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.m_Rotation;
+    if(m_PlayerEntity.HasComponent<CameraComponent>())
+    {
+        m_InputManager->processPlayerInput(m_PlayerEntity, ts, m_MousePosition, Core::Application::Get().GetWindow()->GetHandle());
+        m_PlayerEntity.GetComponent<TransformComponent>().Rotation = m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.m_Rotation;
+    }
 
     //TODO: Rework ALLLL of this so that camera movement and positioning is handled by the entity transform natively, instead of doing this hacky shit
     //Mouse Input
@@ -174,61 +181,27 @@ void AppLayer::OnUpdate(float ts)
 void AppLayer::OnRender()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer->GetFBO());
-    Renderer::Shader newShader = Core::ResourceManager::GetShader("test");
-
-    Renderer::Texture2D tex = Core::ResourceManager::GetTexture("wall");
-
-    //glm::mat4 projection = glm::perspective(glm::radians(m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Zoom), (float)800 / (float)600, 0.1f, 100.0f);
-
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
-    glm::mat4 view = m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.GetViewMatrix2();
-
-    //newShader.setMatrix4("projection", projection);
-    //newShader.setMatrix4("view", view);
 
 
-    //auto& tc = m_CurrentLevel.GetComponent<TransformComponent>();
+    //Renderer::Shader newShader = Core::ResourceManager::GetShader("test");
 
+    //Renderer::Texture2D tex = Core::ResourceManager::GetTexture("wall");
 
-    //Iterate through entities in scene, and draw them
-
-
-    //glm::mat4 model = glm::mat4(1.0f);
-    //model = tc.GetTransform();
-
-
-    //newShader.setMatrix4("model", model);
-
-
-
-    //m_Framebuffer->Bind();
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    //newShader.Use();
-
-
-
-    //New Rendering code test
-
-
-
-
-    m_ActiveScene->OnRender(projection, view);
-
-
-    //maps[0].GetComponent<ModelComponent>().EntityModel.Draw(newShader);
+    //Scene rendering call
+    m_ActiveScene->OnRender();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glDisable(GL_DEPTH_TEST);
 
 
-
-
-    uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
+    //Framebuffer
+    //uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
 
     glClearColor(0.05f, 0.05f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT );

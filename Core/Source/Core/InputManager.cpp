@@ -56,8 +56,6 @@ namespace Core {
 
     void InputManager::processMouseInput(Renderer::PerspectiveCamera *p_Camera, double xposIn, double yposIn)
     {
-
-
         //TODO: rework this function, as well as the keyboard input one, for use with the reworked camera system
 
         float xpos = static_cast<float>(xposIn);
@@ -106,18 +104,6 @@ namespace Core {
         processMouseInput(&cc.p_Camera, mousePos.x, mousePos.y);
         //Process Keyboard Input
         float speed = 7.0f;
-
-        /*
-         i f (glfwGetKey(window, GLFW_KEY_W) == GLF*W_PRESS)
-         tc.Translation.z -= speed * deltaTime;
-         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-             tc.Translation.z += speed * deltaTime;
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            tc.Translation.x -= speed * deltaTime;
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            tc.Translation.x += speed * deltaTime;
-        */
-
 
         //Instead of using "camera front", we should base it off the camera's rotation along the y axis
 
