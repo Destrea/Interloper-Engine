@@ -40,6 +40,7 @@ namespace Core {
 		bool ShouldClose() const;
 
 		GLFWwindow* GetHandle() const { return m_Handle; }
+
 	private:
 		WindowSpecification m_Specification;
 

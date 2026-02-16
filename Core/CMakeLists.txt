@@ -50,6 +50,10 @@ Source/Core/EditorLayer.h
 Source/Core/EditorLayer.cpp
 Source/Core/MapLoader.h
 Source/Core/MapLoader.cpp
+Source/Core/Input.h
+
+Source/Core/Platform/LinuxInput.h
+Source/Core/Platform/LinuxInput.cpp
 
 Source/Core/Renderer/Renderer.h
 Source/Core/Renderer/Renderer.cpp
@@ -57,7 +61,6 @@ Source/Core/Renderer/Shader.h
 Source/Core/Renderer/Shader.cpp
 Source/Core/Renderer/Texture.h
 Source/Core/Renderer/Texture.cpp
-
 Source/Core/Renderer/Camera.h
 Source/Core/Renderer/Camera.cpp
 Source/Core/Renderer/EditorCamera.h

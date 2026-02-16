@@ -1,5 +1,6 @@
 
 #include "Application.h"
+#include "Platform/LinuxInput.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
