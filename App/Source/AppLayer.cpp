@@ -76,14 +76,16 @@ AppLayer::AppLayer()
     Othershader.setInteger("testTex", texture.ID);
 
 
+    //Temporarily here, until I have a slightly more elegant way of writing individual scripts for each scriptable entity
+
+    //Player Camera Controller Script.
     class CameraController : public ScriptableEntity
     {
     public:
         void OnCreate()
         {
-            //printf("CameraController::OnCreate!");
-            //std::cout << "CameraController::OnCreate!" << std::endl;
-            //printf("CameraController::OnCreate!");
+
+
         }
 
         void OnDestroy()
@@ -94,40 +96,52 @@ AppLayer::AppLayer()
         void OnUpdate(float ts)
         {
             GLFWwindow* window = Core::Application::Get().GetWindow()->GetHandle();
-            //glm::vec2 mousePos = &m_MousePosition;
-            auto& tc = GetComponent<TransformComponent>();
-            auto& cc = GetComponent<CameraComponent>();
-            float speed = 7.0f;
+            auto& tc = this->GetComponent<TransformComponent>();
+            auto& cc = this->GetComponent<CameraComponent>();
 
+
+            if(Input::IsKeyPressed(GLFW_KEY_ESCAPE))
+            {
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                cc.p_Camera.SetCameraLock(false);
+            }
+
+            if(Input::IsKeyPressed(GLFW_KEY_O))
+            {
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                cc.p_Camera.SetCameraLock(true);
+            }
+
+            //Mouse and Keyboard camera input handling
+            glm::vec2 mousePos = Input::GetMousePosition();
+
+
+            float speed = 7.0f;
 
             glm::vec3 Front = cc.p_Camera.GetCameraFront();
             glm::vec3 Right = cc.p_Camera.GetCameraRight();
             glm::vec3 Up = cc.p_Camera.GetCameraUp();
 
-            //TODO: Figure this out, after reworking the camera system, so that each object can be scripted independently
 
-            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            if (Input::IsKeyPressed(GLFW_KEY_W))
                 tc.Translation += Front * speed * ts;
-            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            if (Input::IsKeyPressed(GLFW_KEY_S))
                 tc.Translation -= Front * speed * ts;
-            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            if (Input::IsKeyPressed(GLFW_KEY_A))
                 tc.Translation -= Right * speed * ts;
-            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            if (Input::IsKeyPressed(GLFW_KEY_D))
                 tc.Translation += Right * speed * ts;
             tc.Translation.y = 3.0f;
 
-            //processMouseInput(&cc.p_Camera, mousePos.x, mousePos.y);
+            cc.p_Camera.SetPosition(tc.Translation);
 
-            //tc.Translation = glm::vec4(position,1.0f);
+            cc.p_Camera.ProcessMouseMovement(mousePos.x, mousePos.y);
 
-
-            //GetComponent<CameraComponent>().p_Camera.updateCameraVectors();
         }
     };
 
-    //m_PlayerEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+    m_PlayerEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
-    //m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.Transform = m_PlayerEntity.GetComponent<TransformComponent>().Transform;
 
     Renderer::Texture2D tex = Core::ResourceManager::GetTexture("wall");
     shader.setInteger("texture1", tex.ID);
@@ -162,31 +176,15 @@ void AppLayer::OnEvent(Core::Event& event)
 //Handle physics or player Input. Things that need to be tied to framerate/game tick system for accuracy or fluidity.
 void AppLayer::OnUpdate(float ts)
 {
-    //Keyboard Input
-    //m_InputManager->processKeyboardInput(Core::Application::Get().GetWindow()->GetHandle(), &m_PlayerEntity.GetComponent<CameraComponent>().p_Camera, ts);
-    //m_InputManager->processMouseInput(&m_PlayerEntity.GetComponent<CameraComponent>().p_Camera, m_MousePosition.x, m_MousePosition.y);
 
     m_ActiveScene->OnUpdate(ts);
-    if(m_PlayerEntity.HasComponent<CameraComponent>())
-    {
-        m_InputManager->processPlayerInput(m_PlayerEntity, ts, m_MousePosition, Core::Application::Get().GetWindow()->GetHandle());
-        m_PlayerEntity.GetComponent<TransformComponent>().Rotation = m_PlayerEntity.GetComponent<CameraComponent>().p_Camera.m_Rotation;
-    }
-
-    //TODO: Rework ALLLL of this so that camera movement and positioning is handled by the entity transform natively, instead of doing this hacky shit
-    //Mouse Input
 
 }
 
 void AppLayer::OnRender()
 {
+
     glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer->GetFBO());
-
-
-    //Renderer::Shader newShader = Core::ResourceManager::GetShader("test");
-
-    //Renderer::Texture2D tex = Core::ResourceManager::GetTexture("wall");
-
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -198,10 +196,6 @@ void AppLayer::OnRender()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glDisable(GL_DEPTH_TEST);
-
-
-    //Framebuffer
-    //uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
 
     glClearColor(0.05f, 0.05f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT );
@@ -227,7 +221,7 @@ bool AppLayer::OnMouseButtonPressed(Core::MouseButtonPressedEvent& event)
 bool AppLayer::OnMouseMoved(Core::MouseMovedEvent& event)
 {
     //Mouse movement handling.
-    m_MousePosition = {static_cast<float>(event.GetX()), static_cast<float>(event.GetY()) };
+    //m_MousePosition = {static_cast<float>(event.GetX()), static_cast<float>(event.GetY()) };
     return false;
 }
 
@@ -242,21 +236,7 @@ bool AppLayer::OnWindowClosed(Core::WindowClosedEvent& event)
 
 bool AppLayer::OnKeyPressed(Core::KeyPressedEvent& event)
 {
-    //Keyboard Input handling ONLY for AppLayer
 
-    //If ESC is pressed, we unlock the mouse from the camera, and ignore camera input.
-    if(event.GetKeyCode() == GLFW_KEY_ESCAPE)
-    {
-        //Re-enable cursor, and signal the Input Manager that the cursor is unlocked.
-        glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        m_InputManager->set_cursor(false);
-    }
-    if(event.GetKeyCode() == GLFW_KEY_O)
-    {
-        //Re-enable cursor, and signal the Input Manager that the cursor is unlocked.
-        glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        m_InputManager->set_cursor(true);
-    }
 
     return false;
 }

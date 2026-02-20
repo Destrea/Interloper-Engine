@@ -14,7 +14,6 @@ namespace Core
 
         auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow()->GetHandle());
 
-
         auto state = glfwGetKey( window, keycode);
         //Return if GLFW says that a key is pressed or held
         return state == GLFW_PRESS || state == GLFW_REPEAT;

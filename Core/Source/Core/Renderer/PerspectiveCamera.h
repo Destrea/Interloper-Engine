@@ -34,6 +34,7 @@ namespace Renderer
         const glm::vec3& GetRotation() const {return m_Rotation; }
         void SetRotation(const glm::vec3& rotation) { m_Rotation = rotation; RecalculateViewMatrix(); }
 
+
         void SetTransform(glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale);
 
 
@@ -54,6 +55,9 @@ namespace Renderer
         const glm::vec3& GetCameraUp() const {return m_CameraUp; }
         const glm::vec3& GetWorldUp() const {return m_WorldUp; }
 
+        void SetCameraLock(bool val) { cursor_locked = val;}
+        bool GetCameraLock() {return cursor_locked; }
+
 
 
         //TODO: Add a class function, either for moving the camera, or for returning the directional vectors, so that other classes and functions can use them.
@@ -61,15 +65,16 @@ namespace Renderer
         //TODO: Update/remove the keyboard and mouse controls from InputManager, as needed. Clean it all up so that all of the mouse/keyboard input can be "centalized", to make it easy to keep up with what/who/where things are being controlled from.
 
 
-        glm::vec3 m_Position = {0.0f, 0.0f, 0.0f};
-        glm::vec3 m_Rotation = {0.0f, 0.0f, 0.0f};
-        glm::vec3 m_Scale    = {1.0f, 1.0f, 1.0f};
-
-
     private:
         void RecalculateViewMatrix();
 
     private:
+        //Camera mouse inputs
+        bool cursor_locked = true;
+        float lastX;
+        float lastY;
+        bool firstMouse = true;
+
         //Matrices
         glm::mat4 m_ProjectionMatrix;
         glm::mat4 m_ViewMatrix;
@@ -77,7 +82,9 @@ namespace Renderer
         glm::mat4 m_ViewProjectionMatrix;
 
         //Transform vector 3 components
-
+        glm::vec3 m_Position = {0.0f, 0.0f, 0.0f};
+        glm::vec3 m_Rotation = {0.0f, 0.0f, 0.0f};
+        glm::vec3 m_Scale    = {1.0f, 1.0f, 1.0f};
 
         //Camera Directional Vectors
         glm::vec3 m_CameraFront;

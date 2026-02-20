@@ -43,6 +43,8 @@ namespace Renderer
         RecalculateProjectionMatrix();
     }
 
+
+
     void PerspectiveCamera::SetTransform(glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
     {
         m_Position = translation;
@@ -53,8 +55,36 @@ namespace Renderer
         RecalculateViewMatrix();
     }
 
-    void PerspectiveCamera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
+    void PerspectiveCamera::ProcessMouseMovement(float xpos, float ypos, GLboolean constrainPitch)
     {
+        float xoffset;
+        float yoffset;
+
+        if(cursor_locked)
+        {
+
+            if(firstMouse)
+            {
+                lastX = xpos;
+                lastY = ypos;
+                firstMouse = false;
+            }
+
+            xoffset = xpos - lastX;
+            yoffset = lastY - ypos;
+
+            lastX = xpos;
+            lastY = ypos;
+
+        }
+        else
+        {
+            lastX = xpos;
+            lastY = ypos;
+        }
+
+
+
         float MouseSensitivity = 0.10f;
         glm::vec3 LocalRotation = glm::degrees(m_Rotation);
         xoffset *= MouseSensitivity;

@@ -30,6 +30,7 @@ namespace Core {
         return cursor_locked;
     }
 
+     /*
     void InputManager::processKeyboardInput(GLFWwindow* window, Renderer::PerspectiveCamera *p_Camera, float deltaTime)
     {
         if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
@@ -42,7 +43,7 @@ namespace Core {
         }
 
 
-        /*
+
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             p_Camera->ProcessKeyboard(FORWARD, deltaTime);
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -51,8 +52,9 @@ namespace Core {
             p_Camera->ProcessKeyboard(LEFT, deltaTime);
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             p_Camera->ProcessKeyboard(RIGHT, deltaTime);
-        */
+
     }
+
 
     void InputManager::processMouseInput(Renderer::PerspectiveCamera *p_Camera, double xposIn, double yposIn)
     {
@@ -87,7 +89,6 @@ namespace Core {
             lastX = xpos;
             lastY = ypos;
         }
-
     }
 
     void InputManager::processPlayerInput(Entity playerEntity, float deltaTime, glm::vec2 mousePos, GLFWwindow* window)
@@ -118,6 +119,7 @@ namespace Core {
         tc.Translation.y = 3.0f;
     }
 
+    */
 
 
     InputManager& InputManager::Get()

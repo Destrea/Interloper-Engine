@@ -339,13 +339,13 @@ namespace Core
                 auto& cameraComponent = entity.GetComponent<CameraComponent>();
 
                 //Add the new reworked camera components here in place of the commented options
+                glm::vec3 position = cameraComponent.p_Camera.GetPosition();
+                glm::vec3 rotation = cameraComponent.p_Camera.GetRotation();
+                DrawVec3Control("Position", position);
 
-
-                DrawVec3Control("Position", cameraComponent.p_Camera.m_Position);
-
-                glm::vec3 localrot = glm::degrees(cameraComponent.p_Camera.m_Rotation);
+                glm::vec3 localrot = glm::degrees(rotation);
                 DrawVec3Control("LocalRotation", localrot);
-                cameraComponent.p_Camera.m_Rotation = glm::radians(localrot);
+                cameraComponent.p_Camera.SetRotation(glm::radians(localrot));
 
                 glm::vec3 camFront = cameraComponent.p_Camera.GetCameraFront();
                 DrawVec3Control("CameraFront", camFront);

@@ -80,7 +80,6 @@ namespace Core
         CameraComponent(const CameraComponent&) = default;
         CameraComponent(glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale) : p_Camera(translation, rotation, scale) {}
 
-
     };
 
     struct NativeScriptComponent

@@ -19,8 +19,10 @@ namespace Core
         InputManager();
         ~InputManager();
 
+
         bool get_cursor();
         void set_cursor(bool val);
+
         void processKeyboardInput(GLFWwindow *window, Renderer::PerspectiveCamera *p_Camera, float deltaTime);
         void processMouseInput(Renderer::PerspectiveCamera *p_Camera, double xposIn, double yposIn);
 

@@ -13,6 +13,8 @@
 #include <vector>
 #include <set>
 
+#include "Platform/LinuxInput.h"
+
 namespace Core {
 
 	struct ApplicationSpecification
