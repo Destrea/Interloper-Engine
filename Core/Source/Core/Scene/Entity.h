@@ -48,8 +48,10 @@ namespace Core {
         T& AddComponent(Args&&... args)
         {
             //Add asserts here, for easier debugging :)
-
-            return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+            T& component = m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+            m_Scene->OnComponentAdded<T>(*this, component);
+            return component;
+            //return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
         }
 
         template<typename T>

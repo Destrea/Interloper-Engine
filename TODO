@@ -1,25 +1,15 @@
 
 TODO:
 ============================================================
-X - Object Manager and Entity Component System
-Update Camera system to allow player(perspecive) cameras as well as an Editor Camera
-
-3D collision Detection
-
-Base audio Implementation
-
-Config/Settings File reading/writing
-
-
-
-Backlog:
-==============================
-Entity Control System and Object manager
-UUID system
-
-3D Collisions
-Config/Settings/Input file handling
-
-
-
-Base Audio Implementation
+- Finish platform abstraction, adding "Window" abstraction layer.
+- Update Editor camera to work differently from "player camera"
+- Pull ImGui code from EditorLayer into it's own Layer
+- Scene Serialization (Saving and loading)
+- Engine config/Settings File reading/writing
+- Entity UUIDs
+- Parent/child relationships for ECS
+- Scene Play/Stop functionality, for testing
+- Transformation Gizmos (Move, Rotate, Scale)
+- 3D collision Detection
+- Base audio Implementation
+- Base raycasting Implementation

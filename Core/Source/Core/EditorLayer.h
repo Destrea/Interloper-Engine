@@ -43,6 +43,9 @@ namespace Core
         void EndEngineUI();
         void toggleHidden();
         void GetFPS();
+
+    public:
+        void SetDarkThemeColors();
     private:
         bool OnMouseButtonPressed(Core::MouseButtonPressedEvent& event);
         bool OnMouseMoved(Core::MouseMovedEvent& event);

@@ -64,6 +64,13 @@ void EditorLayer::OnRender()
     ImGui::NewFrame();
 
 
+    //ImGuiIO& io = ImGui::GetIO();
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    //Forcing minimum window size on "Dockspace" windows, for clarity in viewing
+    float minWinSize = style.WindowMinSize.x;
+    style.WindowMinSize.x = 370.0f;
+
 
     if(ImGui::BeginMainMenuBar())
     {
@@ -75,10 +82,13 @@ void EditorLayer::OnRender()
         ImGui::EndMainMenuBar();
     }
 
+
+    //TODO: Update dockspace code when re-doing ImGui layer code
     ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
-     m_SceneHierarchyPanel.OnImGuiRender();
+    m_SceneHierarchyPanel.OnImGuiRender();
 
+    style.WindowMinSize.x = minWinSize;
 
     if(ImGui::Begin("Editor"))
     {
@@ -117,34 +127,6 @@ void EditorLayer::OnRender()
     }
 
 
-
-
-
-#if Debug
-    if(ImGui::Begin("Framebuffer Debug"))
-    {
-        ImGui::Text("Fbo Width/Height: %d / %d", m_Framebuffer->GetSpec().Width, m_Framebuffer->GetSpec().Height);
-        ImGui::Text("Viewport Width/Height: %f / %f", m_ViewportSize.x, m_ViewportSize.y);
-        //printf("Fbo Width/Height: %d / %d\n", m_Framebuffer->GetSpec().Width, m_Framebuffer->GetSpec().Height);
-        //printf("Viewport Width/Height: %f / %f\n", m_ViewportSize.x, m_ViewportSize.y);
-        ImGui::Separator();
-        ImGui::Text("m_Framebuffer TextureID: %u", textureID);
-        ImGui::End();
-    }
-
-
-    if(ImGui::Begin("Debug"))
-    {
-        ImGui::Text("FPS: %f", 1.0f / m_Timestep);
-        ImGui::End();
-    }
-#endif
-
-
-
-    //EditorViewport();
-
-
     ImGui::EndFrame();
     ImGui::Render();
     int display_w, display_h;
@@ -167,6 +149,8 @@ void EditorLayer::OnRender()
 
 void EditorLayer::BeginEngineUI()
 {
+    //TODO: Migrate all of this into its own ImGuiLayer cpp file
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     static ImGuiIO& io = ImGui::GetIO(); (void) io;
@@ -174,6 +158,15 @@ void EditorLayer::BeginEngineUI()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+
+    //Adds new fonts to the io
+    io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/static/OpenSans-Bold.ttf", 18.0f);   //Font [1] is Bolded OpenSans
+    io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/static/OpenSans-Regular.ttf", 18.0f);
+
+
+    //Theme coloring
+    SetDarkThemeColors();
+
 
     ImGui::StyleColorsDark();
 
@@ -199,48 +192,11 @@ void EditorLayer::BeginEngineUI()
     //Core::Entity m_Camera = m_ActiveScene->CreateEntity("EditorCamera");
     m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
-#if Testing
-    //Editor Camera controller
-    class CameraController : public ScriptableEntity
-    {
-    public:
-        void OnCreate()
-        {
-
-            //std::cout << "CameraController::OnCreate!" << std::endl;
-            //printf("CameraController::OnCreate!");
-        }
-
-        void OnDestroy()
-        {
-
-        }
-
-        void OnUpdate(float ts)
-        {
-
-
-        }
-    };
-
-    //m_EditorCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-#endif
 }
 
 bool EditorLayer::OnMouseButtonPressed(Core::MouseButtonPressedEvent& event)
 {
 
-    //Mouse button press handling.
-    //Double check with TheCherno github to see how its used.
-    /*
-
-
-    if(m_InputManager->get_cursor() == false)
-    {
-        glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        m_InputManager->set_cursor(true);
-    }
-    */
     return false;
 }
 
@@ -269,6 +225,15 @@ bool EditorLayer::OnKeyPressed(Core::KeyPressedEvent& event)
 void EditorLayer::GetFPS()
 {
 
+
+}
+
+//TODO: Move to ImGuiLayer later
+void EditorLayer::SetDarkThemeColors()
+{
+    auto& colors = ImGui::GetStyle().Colors;
+
+    //TODO: Add Colors here. Refer to Demo project or video to see how an example line is done.
 
 }
 

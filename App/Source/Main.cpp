@@ -7,9 +7,9 @@
 int main()
 {
     Core::ApplicationSpecification appSpec;
-    appSpec.Name = "Architecture";
-    appSpec.WindowSpec.Width = 1920;
-    appSpec.WindowSpec.Height = 1080;
+    appSpec.Name = "Interloper Game Engine";
+    appSpec.WindowSpec.Width = 1600;
+    appSpec.WindowSpec.Height = 900;
 
     Core::Application application(appSpec);
     application.PushLayer<AppLayer>();          //Game Layer

@@ -52,9 +52,12 @@ Source/Core/MapLoader.h
 Source/Core/MapLoader.cpp
 Source/Core/Input.h
 
+# Platform Abstractions
 Source/Core/Platform/LinuxInput.h
 Source/Core/Platform/LinuxInput.cpp
 
+
+# Rendering
 Source/Core/Renderer/Renderer.h
 Source/Core/Renderer/Renderer.cpp
 Source/Core/Renderer/Shader.h
@@ -72,6 +75,7 @@ Source/Core/Renderer/Mesh.h
 Source/Core/Renderer/Framebuffer.h
 Source/Core/Renderer/Framebuffer.cpp
 
+# Scene and ECS
 Source/Core/Scene/Scene.h
 Source/Core/Scene/Scene.cpp
 Source/Core/Scene/Entity.h
@@ -79,6 +83,7 @@ Source/Core/Scene/Entity.cpp
 Source/Core/Scene/ScriptableEntity.h
 Source/Core/Scene/Components.h
 
+# Engine UI Panels
 Source/Core/Panels/SceneHierarchyPanel.h
 Source/Core/Panels/SceneHierarchyPanel.cpp
 )
@@ -98,11 +103,13 @@ target_link_libraries(Core glfw)
 target_link_libraries(Core glm)
 target_link_libraries(Core assimp)
 
-target_include_directories(Core PUBLIC "Source" "vendor/stb" "vendor/glad/include" "vendor/ImGui" "vendor/entt/include")
-
 add_custom_target(copy_core_res ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${PROJECT_SOURCE_DIR}/Core/Res
     ${PROJECT_BINARY_DIR}/Core/Res
     COMMENT "Copying Core resources into binary directory")
+
+target_include_directories(Core PUBLIC "Res" "Source" "vendor/stb" "vendor/glad/include" "vendor/ImGui" "vendor/entt/include")
+
+
 

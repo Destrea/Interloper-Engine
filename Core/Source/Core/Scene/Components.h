@@ -56,7 +56,7 @@ namespace Core
         Renderer::Model EntityModel;
         Renderer::Shader EntityShader;
 
-        ModelComponent() = default;
+        //ModelComponent() = default;
         ModelComponent(const ModelComponent&) = default;
         ModelComponent(std::string const &path) : EntityModel(path) {}
     };
@@ -65,7 +65,7 @@ namespace Core
     {
         MapData data;
 
-        MapDataComponent() = default;
+        //MapDataComponent() = default;
         MapDataComponent(const MapDataComponent&) = default;
         MapDataComponent(std::string const &path) : data(path) {}
     };

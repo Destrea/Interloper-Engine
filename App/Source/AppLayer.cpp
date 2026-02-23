@@ -78,13 +78,17 @@ AppLayer::AppLayer()
 
     //Temporarily here, until I have a slightly more elegant way of writing individual scripts for each scriptable entity
 
+
+
+    //TODO: Fix bug where deleting camera before deleting the NSC causes a crash, since the NSC cant connect find/connect to the camera to run the script.
+
+
     //Player Camera Controller Script.
     class CameraController : public ScriptableEntity
     {
     public:
         void OnCreate()
         {
-
 
         }
 

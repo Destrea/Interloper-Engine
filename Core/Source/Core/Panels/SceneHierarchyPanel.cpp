@@ -70,103 +70,7 @@ namespace Core
         {
             DrawComponents(m_SelectionContext);
 
-            if (ImGui::Button("Add Component"))
-                ImGui::OpenPopup("AddComponent");
 
-            if(ImGui::BeginPopup("AddComponent"))
-            {
-                if(ImGui::MenuItem("Camera"))
-                {
-                    m_SelectionContext.AddComponent<CameraComponent>();
-                    auto selectionTC = m_SelectionContext.GetComponent<TransformComponent>();
-                    auto selectionCC = m_SelectionContext.GetComponent<CameraComponent>();
-                    selectionCC.p_Camera.SetTransform(selectionTC.Translation, selectionTC.Rotation, selectionTC.Scale);
-                    selectionCC.p_Camera.SetAspectRatio(1920, 1080);
-
-                    ImGui::CloseCurrentPopup();
-                }
-
-                if(ImGui::MenuItem("Model Renderer"))
-                {
-                    //Open A menu to select the 3D Model that you want
-                    //It'll take the path to the file you selected, and pass it into the ModelComponent Constructor.
-                    //If nothing is provided, It'll default to a basic Cube.
-
-                    //TODO: Implement model/file selction UI, and Update this to use it!
-
-                    std::string path;
-
-                    m_SelectionContext.AddComponent<ModelComponent>("Resources/DefaultModels/DefaultCube.obj");
-                    //Add a placeholder Shader to it here.
-
-                    Renderer::Shader Othershader = Core::ResourceManager::GetShader("Shader1");
-                    Renderer::Texture2D myTexture = Core::ResourceManager::GetTexture("wallTest");
-                    Othershader.setInteger("testTex", myTexture.ID);
-
-                    m_SelectionContext.GetComponent<ModelComponent>().EntityShader = Othershader;
-
-                    ImGui::CloseCurrentPopup();
-                }
-
-                if(ImGui::MenuItem("Native Script Component"))
-                {
-                    //TODO: Maybe make a "Scripting Components" file with all of the script classes
-
-                    class CameraController : public ScriptableEntity
-                    {
-                    public:
-                        void OnCreate()
-                        {
-                            //printf("CameraController::OnCreate!");
-                            //std::cout << "CameraController::OnCreate!" << std::endl;
-                            //printf("CameraController::OnCreate!");
-                        }
-
-                        void OnDestroy()
-                        {
-
-                        }
-
-                        void OnUpdate(float ts)
-                        {
-                            /*
-                            GLFWwindow* window = Core::Application::Get().GetWindow()->GetHandle();
-                            //glm::vec2 mousePos = m_MousePosition;
-                            auto& tc = GetComponent<TransformComponent>();
-                            auto& cc = GetComponent<CameraComponent>();
-                            float speed = 7.0f;
-
-
-                            glm::vec3 Front = cc.p_Camera.GetCameraFront();
-                            glm::vec3 Right = cc.p_Camera.GetCameraRight();
-                            glm::vec3 Up = cc.p_Camera.GetCameraUp();
-
-                            //TODO: Figure out how to dynamically add Native Scripts to entities, so that you can use this CameraController to move the player/camera
-
-                            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-                                tc.Translation += Front * speed * ts;
-                            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-                                tc.Translation -= Front * speed * ts;
-                            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-                                tc.Translation -= Right * speed * ts;
-                            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-                                tc.Translation += Right * speed * ts;
-                            tc.Translation.y = 3.0f;
-
-                            //m_InputManager->processMouseInput(&cc.p_Camera, m_MousePosition.x, m_MousePosition.y);
-
-                            */
-                        }
-                    };
-
-                    m_SelectionContext.AddComponent<NativeScriptComponent>(new CameraController());
-                    ImGui::CloseCurrentPopup();
-                }
-
-
-
-                ImGui::EndPopup();
-            }
 
 
 
@@ -182,11 +86,14 @@ namespace Core
         //ImGui::Text("%s", tag.c_str());
 
         ImGuiTreeNodeFlags flags = ((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+        flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
         bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
         if(ImGui::IsItemClicked())
         {
             m_SelectionContext = entity;
         }
+
+
 
 
         bool entityDeleted = false;
@@ -202,7 +109,7 @@ namespace Core
 
         if(opened)
         {
-            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
             bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
             if(opened)
                 ImGui::TreePop();
@@ -222,6 +129,10 @@ namespace Core
 
     static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f)
     {
+        ImGuiIO& io = ImGui::GetIO();
+        auto boldFont = io.Fonts->Fonts[0];
+
+
         ImGui::PushID(label.c_str());
 
         ImGui::Columns(2);
@@ -234,7 +145,7 @@ namespace Core
         ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0,0});
         //FontSize not found, using Scale
-        float lineHeight = GImGui->Font->Scale + GImGui->Style.FramePadding.y * 6.0f;
+        float lineHeight = GImGui->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 
         ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight};
 
@@ -244,8 +155,10 @@ namespace Core
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.9f, 0.2f, 0.2f, 1.0f});
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
 
+        ImGui::PushFont(boldFont);
         if (ImGui::Button("X",buttonSize))
             values.x = resetValue;
+        ImGui::PopFont();
         ImGui::PopStyleColor(3);
 
         ImGui::SameLine();
@@ -258,9 +171,11 @@ namespace Core
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
-
+        ImGui::PushFont(boldFont);
         if (ImGui::Button("Y",buttonSize))
             values.y = resetValue;
+        ImGui::PopFont();
+
         ImGui::PopStyleColor(3);
 
         ImGui::SameLine();
@@ -273,9 +188,11 @@ namespace Core
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.2f, 0.35f, 0.9f, 1.0f});
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
-
+        ImGui::PushFont(boldFont);
         if (ImGui::Button("Z",buttonSize))
             values.z = resetValue;
+        ImGui::PopFont();
+
         ImGui::PopStyleColor(3);
 
 
@@ -291,93 +208,30 @@ namespace Core
     }
 
 
-    void SceneHierarchyPanel::DrawComponents(Entity entity)
+    //Template and lambda function for component UI drawing.
+    //This allows each component to re-use the same code, dynamically filling what type of component it is
+    //while also allowing us to use a lambda function to pass in any kind of "unique" function code that is needed for each different component.
+    template<typename T, typename UIFunction>
+    static void DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
     {
-        if(entity.HasComponent<TagComponent>())
+        if(entity.HasComponent<T>())
         {
-            auto& tag = entity.GetComponent<TagComponent>().Tag;
+            auto& component = entity.GetComponent<T>();
+            ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
 
-            //Could lead to buffer overflow, if the input string is greater than 256 bytes
-            char buffer[256];
-            memset(buffer, 0, sizeof(buffer));
-            strcpy(buffer, tag.c_str());
-            if(ImGui::InputText("Tag",buffer, sizeof(buffer)))
-            {
-                tag = std::string(buffer);
-            }
-        }
-
-        const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
-
-
-        if(entity.HasComponent<TransformComponent>())
-        {
-            bool open = ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), treeNodeFlags, "Transform" );
-
-
-            if(open)
-            {
-                auto& tc = entity.GetComponent<TransformComponent>();
-                DrawVec3Control("Translation", tc.Translation);
-                glm::vec3 rotation = glm::degrees(tc.Rotation);
-                DrawVec3Control("Rotation", rotation);
-                tc.Rotation = glm::radians(rotation);
-                DrawVec3Control("Scale", tc.Scale, 1.0f);
-                ImGui::TreePop();
-            }
-
-
-        }
-
-        //TODO: Add actual Settings for CameraComponent
-        //TODO: Rework editor camera, fix camera deletion bug
-
-        if(entity.HasComponent<CameraComponent>())
-        {
-            if(ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), treeNodeFlags, "Camera" ))
-            {
-                auto& cameraComponent = entity.GetComponent<CameraComponent>();
-
-                //Add the new reworked camera components here in place of the commented options
-                glm::vec3 position = cameraComponent.p_Camera.GetPosition();
-                glm::vec3 rotation = cameraComponent.p_Camera.GetRotation();
-                DrawVec3Control("Position", position);
-
-                glm::vec3 localrot = glm::degrees(rotation);
-                DrawVec3Control("LocalRotation", localrot);
-                cameraComponent.p_Camera.SetRotation(glm::radians(localrot));
-
-                glm::vec3 camFront = cameraComponent.p_Camera.GetCameraFront();
-                DrawVec3Control("CameraFront", camFront);
-                glm::vec3 camUp = cameraComponent.p_Camera.GetCameraUp();
-                DrawVec3Control("CameraUp", camUp);
-                glm::vec3 camRight = cameraComponent.p_Camera.GetCameraRight();
-                DrawVec3Control("CameraRight", camRight);
-
-                glm::vec3 worldUp = cameraComponent.p_Camera.GetWorldUp();
-                DrawVec3Control("WorldUp", worldUp);
-
-
-                ImGui::TreePop();
-            }
-
-        }
-
-
-
-
-        if(entity.HasComponent<ModelComponent>())
-        {
+            const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4,4});
-            bool open = ImGui::TreeNodeEx((void*)typeid(ModelComponent).hash_code(), treeNodeFlags, "Model Component");
-
-            ImGui::SameLine(ImGui::GetWindowWidth() - 25.0f);
-            if(ImGui::Button("+", ImVec2 {20,20}))
+            float lineHeight = GImGui->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+            ImGui::Separator();
+            bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
+            ImGui::PopStyleVar();
+            ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
+            if(ImGui::Button("+", ImVec2 {lineHeight,lineHeight}))
             {
                 ImGui::OpenPopup("ComponentSettings");
             }
-            ImGui::PopStyleVar();
+
 
             bool removeComponent = false;
             if(ImGui::BeginPopup("ComponentSettings"))
@@ -390,27 +244,144 @@ namespace Core
 
             if(open)
             {
-                ImGui::Text("Model Component Placeholder");
+
+                uiFunction(component);
                 ImGui::TreePop();
             }
 
             if(removeComponent)
-                entity.RemoveComponent<ModelComponent>();
+                entity.RemoveComponent<T>();
         }
 
+    }
 
-        if(entity.HasComponent<NativeScriptComponent>())
+    void SceneHierarchyPanel::DrawComponents(Entity entity)
+    {
+        //Cannot be removed from entity
+        if(entity.HasComponent<TagComponent>())
         {
-            bool open = ImGui::TreeNodeEx((void*)typeid(NativeScriptComponent).hash_code(), treeNodeFlags, "Scriptable Entity");
-            if(open)
+            auto& tag = entity.GetComponent<TagComponent>().Tag;
+
+            //Could lead to buffer overflow, if the input string is greater than 256 bytes
+            char buffer[256];
+            memset(buffer, 0, sizeof(buffer));
+            strcpy(buffer, tag.c_str());
+            if(ImGui::InputText("##Tag",buffer, sizeof(buffer)))
             {
-               ImGui::Text("NativeScriptComponent Placeholder");
-               ImGui::TreePop();
+                tag = std::string(buffer);
+            }
+        }
+
+        ImGui::SameLine();
+        ImGui::PushItemWidth(-1);
+
+        if (ImGui::Button("Add Component"))
+            ImGui::OpenPopup("AddComponent");
+
+        if(ImGui::BeginPopup("AddComponent"))
+        {
+
+            //TODO: Move each of the things in here into their templated functions we created.
+            if(ImGui::MenuItem("Camera"))
+            {
+
+                m_SelectionContext.AddComponent<CameraComponent>();
+                auto selectionTC = m_SelectionContext.GetComponent<TransformComponent>();
+                auto selectionCC = m_SelectionContext.GetComponent<CameraComponent>();
+                selectionCC.p_Camera.SetTransform(selectionTC.Translation, selectionTC.Rotation, selectionTC.Scale);
+                selectionCC.p_Camera.SetAspectRatio(1920, 1080);
+
+                ImGui::CloseCurrentPopup();
             }
 
+            if(ImGui::MenuItem("Model Renderer"))
+            {
+                //Open A menu to select the 3D Model that you want
+                //It'll take the path to the file you selected, and pass it into the ModelComponent Constructor.
+                //If nothing is provided, It'll default to a basic Cube.
+
+                //TODO: Implement model/file selction UI, and Update this to use it!
+
+                std::string path;
+
+                m_SelectionContext.AddComponent<ModelComponent>("Resources/DefaultModels/DefaultCube.obj");
+                //Add a placeholder Shader to it here.
+
+                Renderer::Shader Othershader = Core::ResourceManager::GetShader("Shader1");
+                Renderer::Texture2D myTexture = Core::ResourceManager::GetTexture("wallTest");
+                Othershader.setInteger("testTex", myTexture.ID);
+
+                m_SelectionContext.GetComponent<ModelComponent>().EntityShader = Othershader;
+
+                ImGui::CloseCurrentPopup();
+            }
+
+            if(ImGui::MenuItem("Native Script Component"))
+            {
+                //TODO: Maybe make a "Scripting Components" file with all of the script classe
+                m_SelectionContext.AddComponent<NativeScriptComponent>();
+                ImGui::CloseCurrentPopup();
+            }
+
+
+
+            ImGui::EndPopup();
         }
 
+        ImGui::PopItemWidth();
 
+
+
+
+        //Cannot be removed from entity
+        DrawComponent<TransformComponent>("Transform", entity, [](auto& component){
+            auto& tc = component;
+            DrawVec3Control("Translation", tc.Translation);
+            glm::vec3 rotation = glm::degrees(tc.Rotation);
+            DrawVec3Control("Rotation", rotation);
+            tc.Rotation = glm::radians(rotation);
+            DrawVec3Control("Scale", tc.Scale, 1.0f);
+        });
+
+
+
+        DrawComponent<CameraComponent>("Camera", entity, [](auto& component)
+        {
+            //TODO: Add actual Settings for CameraComponent
+            //TODO: Rework editor camera
+
+            auto& cameraComponent = component;
+
+            //Add the new reworked camera components here in place of the commented options
+            glm::vec3 position = cameraComponent.p_Camera.GetPosition();
+            glm::vec3 rotation = cameraComponent.p_Camera.GetRotation();
+            DrawVec3Control("Position", position);
+
+            glm::vec3 localrot = glm::degrees(rotation);
+            DrawVec3Control("LocalRotation", localrot);
+            cameraComponent.p_Camera.SetRotation(glm::radians(localrot));
+
+            glm::vec3 camFront = cameraComponent.p_Camera.GetCameraFront();
+            DrawVec3Control("CameraFront", camFront);
+            glm::vec3 camUp = cameraComponent.p_Camera.GetCameraUp();
+            DrawVec3Control("CameraUp", camUp);
+            glm::vec3 camRight = cameraComponent.p_Camera.GetCameraRight();
+            DrawVec3Control("CameraRight", camRight);
+
+            glm::vec3 worldUp = cameraComponent.p_Camera.GetWorldUp();
+            DrawVec3Control("WorldUp", worldUp);
+        });
+
+
+        DrawComponent<ModelComponent>("Model", entity, [](auto& component)
+        {
+            ImGui::Text("Model Component Placeholder");
+        });
+
+        DrawComponent<NativeScriptComponent>("Script", entity, [](auto& component)
+        {
+            ImGui::Text("NativeScriptComponent Placeholder");
+        });
 
     }
 
