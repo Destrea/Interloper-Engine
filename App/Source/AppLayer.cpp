@@ -37,15 +37,11 @@ AppLayer::AppLayer()
     playerCamera.p_Camera.SetTransform(playerTransform.Translation, playerTransform.Rotation, playerTransform.Scale);
     playerCamera.p_Camera.SetAspectRatio(1920, 1080);
 
-
-
     m_PlayerEntity = m_Player;
 
     m_InputManager = std::make_shared<Core::InputManager>();
 
     m_Framebuffer = Core::Application::Get().GetFramebuffer();
-
-
 
     //Disable cursor by default.
     glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
