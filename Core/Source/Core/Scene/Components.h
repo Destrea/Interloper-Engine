@@ -9,6 +9,7 @@
 #include "ScriptableEntity.h"
 #include "Core/MapLoader.h"
 #include "Core/Renderer/Shader.h"
+#include "Core/ResourceManager.h"
 
 using namespace Renderer;
 
@@ -55,14 +56,60 @@ namespace Core
         //Fix this all so that it actually loads the model specified
         Renderer::Model EntityModel;
         Renderer::Shader EntityShader;
+        Renderer::Texture2D EntityTex;
+
+        std::string ShaderName;
+        std::string TexName;
+
+        std::string modelPath;
+
+        //Default shader paths initialized, but then you can change it.
+        //These will likely be replaced with SPIR-V eqquivalents
+        std::string fragPath;
+        std::string vertPath;
+        std::string texPath;
+
 
         //ModelComponent() = default;
         ModelComponent(const ModelComponent&) = default;
-        ModelComponent(std::string const &path) : EntityModel(path) {}
+        ModelComponent(std::string const &path) : EntityModel(path) {
+            modelPath = path.c_str();
+        }
+
+        //Set the vertex and fragment shader paths
+        void SetShader(std::string vert, std::string frag, std::string name  = "UnnamedShader")
+        {
+            fragPath = frag.c_str();
+            vertPath = vert.c_str();
+            ShaderName = name;
+            //Optionally add a "load" field to the args, to allow it to immediately call LoadModelShader
+        }
+
+        //Load the shader into the modelComponent's EntityShader
+        Renderer::Shader LoadModelShader(std::string name)
+        {
+            ShaderName = name;
+            return Core::ResourceManager::LoadShader(vertPath.c_str(), fragPath.c_str(), name);
+        }
+
+        void SetTexture(std::string tex, std::string name = "UnnamedTexture")
+        {
+            TexName = name;
+            texPath = tex.c_str();
+        }
+
+        Renderer::Texture2D LoadModelTexture(std::string name = "UnnamedTexture")
+        {
+            TexName = name;
+            return Core::ResourceManager::LoadTexture(texPath.c_str(), false, name);
+        }
+
     };
 
     struct MapDataComponent
     {
+
+        //TODO: Decide if this entire component should stay or be removed, since we can serialize scenes now.
         MapData data;
 
         //MapDataComponent() = default;

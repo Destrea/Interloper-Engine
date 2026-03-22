@@ -1,7 +1,6 @@
 
 TODO:
 ============================================================
-- Finish platform abstraction, adding "Window" abstraction layer.
 - Update Editor camera to work differently from "player camera"
 - Pull ImGui code from EditorLayer into it's own Layer
 - Scene Serialization (Saving and loading)
@@ -13,3 +12,4 @@ TODO:
 - 3D collision Detection
 - Base audio Implementation
 - Base raycasting Implementation
+- Add more to platform abstraction, Windows layer, and other platforms.

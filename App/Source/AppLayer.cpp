@@ -21,6 +21,7 @@ using namespace Core;
 
 AppLayer::AppLayer()
 {
+
     //Create Shader and load it.
     Renderer::Shader shader = Core::ResourceManager::LoadShader("Resources/Shaders/Vertex.glsl", "Resources/Shaders/Frag.glsl", "test");
 
@@ -50,6 +51,10 @@ AppLayer::AppLayer()
     m_TestMap.AddComponent<MapDataComponent>("Resources/Maps/Test1.map");
     m_TestMap.AddComponent<ModelComponent>("Resources/Maps/Test1.obj");
     maps.push_back(m_TestMap);
+
+    m_TestMap.GetComponent<ModelComponent>().ShaderName = "MapShader";
+    m_TestMap.GetComponent<ModelComponent>().TexName = "MapTex";
+
     //Model test("Resources/Maps/Test1.obj");
     //MapData test1("Resources/Maps/Test1.map");
 
@@ -69,7 +74,7 @@ AppLayer::AppLayer()
     Renderer::Shader Othershader = Core::ResourceManager::LoadShader("Resources/Shaders/defaultVertex.glsl", "Resources/Shaders/defaultFragment.glsl", "Shader1");
 
     Renderer::Texture2D texture = Core::ResourceManager::LoadTexture("Resources/Textures/Debugempty.png", false, "wallTest");
-    Othershader.setInteger("testTex", texture.ID);
+    //Othershader.setInteger("testTex", texture.ID);
 
 
     //Temporarily here, until I have a slightly more elegant way of writing individual scripts for each scriptable entity

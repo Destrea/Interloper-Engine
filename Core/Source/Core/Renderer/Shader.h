@@ -7,7 +7,6 @@ namespace Renderer {
     class Shader
     {
     public:
-        //TODO Update Shader.h and Shader.cpp to work like it did previously, while also using some of the better tecnhiques from TheCherno's implementation
 
         //Shader State
         unsigned int ID;

@@ -70,6 +70,7 @@ namespace Core
 
         //Panels
         SceneHierarchyPanel m_SceneHierarchyPanel;
+
     };
 }
 

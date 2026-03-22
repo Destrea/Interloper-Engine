@@ -82,6 +82,9 @@ Source/Core/Scene/Entity.h
 Source/Core/Scene/Entity.cpp
 Source/Core/Scene/ScriptableEntity.h
 Source/Core/Scene/Components.h
+Source/Core/Scene/SceneSerializer.h
+Source/Core/Scene/SceneSerializer.cpp
+
 
 # Engine UI Panels
 Source/Core/Panels/SceneHierarchyPanel.h
@@ -102,6 +105,7 @@ add_compile_definitions(
 target_link_libraries(Core glfw)
 target_link_libraries(Core glm)
 target_link_libraries(Core assimp)
+target_link_libraries(Core yaml-cpp::yaml-cpp)
 
 add_custom_target(copy_core_res ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory

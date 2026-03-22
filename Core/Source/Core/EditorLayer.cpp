@@ -1,5 +1,7 @@
 
 #include "EditorLayer.h"
+#include "Scene/SceneSerializer.h"
+
 using namespace Core;
 
 #include <print>
@@ -163,7 +165,6 @@ void EditorLayer::BeginEngineUI()
     io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/static/OpenSans-Bold.ttf", 18.0f);   //Font [1] is Bolded OpenSans
     io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/static/OpenSans-Regular.ttf", 18.0f);
 
-
     //Theme coloring
     SetDarkThemeColors();
 
@@ -179,9 +180,6 @@ void EditorLayer::BeginEngineUI()
 
     //m_ActiveScene = std::make_shared<Core::Scene>();
     m_ActiveScene = Core::Application::Get().GetActiveScene();
-    //m_EditorCamera = m_ActiveScene->CreateEntity("EditorCamera");
-    //m_EditorCamera.AddComponent<CameraComponent>();
-
     m_Framebuffer = Core::Application::Get().GetFramebuffer();
 
     window = Core::Application::Get().GetWindow()->GetHandle();
@@ -189,8 +187,10 @@ void EditorLayer::BeginEngineUI()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    //Core::Entity m_Camera = m_ActiveScene->CreateEntity("EditorCamera");
     m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+    SceneSerializer serializer(m_ActiveScene);
+    serializer.Serialize("Resources/scenes/Example.sctxt");
 
 }
 
@@ -218,6 +218,14 @@ bool EditorLayer::OnWindowClosed(Core::WindowClosedEvent& event)
 bool EditorLayer::OnKeyPressed(Core::KeyPressedEvent& event)
 {
     //Keyboard Input handling ONLY for AppLayer
+    if (Input::IsKeyPressed(GLFW_KEY_U))
+    {
+        SceneSerializer serializer(m_ActiveScene);
+        serializer.Serialize("Resources/scenes/Example.sctxt");
+    }
+
+
+
 
     return false;
 }

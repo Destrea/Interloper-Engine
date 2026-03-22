@@ -302,7 +302,8 @@ namespace Core
 
                 //TODO: Implement model/file selction UI, and Update this to use it!
 
-                std::string path;
+                //std::string path;
+
 
                 m_SelectionContext.AddComponent<ModelComponent>("Resources/DefaultModels/DefaultCube.obj");
                 //Add a placeholder Shader to it here.
@@ -312,7 +313,8 @@ namespace Core
                 Othershader.setInteger("testTex", myTexture.ID);
 
                 m_SelectionContext.GetComponent<ModelComponent>().EntityShader = Othershader;
-
+                m_SelectionContext.GetComponent<ModelComponent>().SetShader("Resources/Shaders/defaultVertex.glsl", "Resources/Shaders/defaultFragment.glsl");
+                m_SelectionContext.GetComponent<ModelComponent>().SetTexture("Resources/Textures/Debugempty.png");
                 ImGui::CloseCurrentPopup();
             }
 
@@ -375,7 +377,9 @@ namespace Core
 
         DrawComponent<ModelComponent>("Model", entity, [](auto& component)
         {
-            ImGui::Text("Model Component Placeholder");
+            ImGui::Text("ModelComponent Placeholder");
+            //ImGui::Text("TexturePath %s\n", component.texPath);
+            //ImGui::Text("ShaderPath: %s\n %s\n", component.vertPath, component.fragPath);
         });
 
         DrawComponent<NativeScriptComponent>("Script", entity, [](auto& component)

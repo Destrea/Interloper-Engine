@@ -61,10 +61,6 @@ namespace Core
         });
     }
 
-
-    //TODO: Fix bug where "no existing model component" causes all future model components to render without a shader.
-
-
     //Scene rendering pass
     void Scene::OnRender()
     {
@@ -103,7 +99,6 @@ namespace Core
                 EntityShader.setMatrix4("model", model);
                 EntityShader.setMatrix4("projection", projection);
                 EntityShader.setMatrix4("view", view);
-
 
                 //Draws the entity's model, using the shader
                 mc.EntityModel.Draw(EntityShader);
@@ -155,6 +150,28 @@ namespace Core
     void Scene::OnComponentAdded<ModelComponent>(Entity entity, ModelComponent& component)
     {
 
+        /*
+        //Loads the default cube object, on creation.
+
+        //Loads the default vertex and fragment shaders into the ModelComponent, on being added.
+        component.vertPath = "Resources/Shaders/defalutVertex.glsl";
+        component.fragPath = "Resources/Shaders/defalutFragment.glsl";
+        component.EntityShader = component.LoadModelShader();
+
+        //Loads the default texture, and passes it's value over to the shader
+        component.texPath = "Resources/Maps/Textures/Debugempty.png";
+        component.EntityTex = component.LoadModelTexture();
+        component.EntityShader.setInteger("testTex", component.EntityTex.ID);
+
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 projection = {1.0f};
+        glm::mat4 view = {1.0f};
+
+        component.EntityShader.setMatrix4("model", model);
+        component.EntityShader.setMatrix4("projection", projection);
+        component.EntityShader.setMatrix4("view", view);
+
+        */
     }
 
     template<>

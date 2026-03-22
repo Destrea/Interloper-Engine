@@ -65,6 +65,8 @@ namespace Renderer
         //TODO: Update/remove the keyboard and mouse controls from InputManager, as needed. Clean it all up so that all of the mouse/keyboard input can be "centalized", to make it easy to keep up with what/who/where things are being controlled from.
 
 
+        //TODO: add capability for non-"primary" cameras, which can be used for stencil buffers, editor camera, etc.
+
     private:
         void RecalculateViewMatrix();
 
@@ -92,6 +94,10 @@ namespace Renderer
         glm::vec3 m_CameraUp;
         glm::vec3 m_WorldUp;
 
+
+
+
+        //TODO: Create properties panel entries for these, and make them editable, and then serialize them.
         //Clipping distances, near and far
         float m_PerspectiveNear = 0.01f;
         float m_PerspectiveFar = 1000.0f;

@@ -43,7 +43,6 @@ endif()
 set_target_properties(glm PROPERTIES FOLDER "Dependencies")
 
 
-
 # Assimp
 FetchContent_Declare(
         assimp
@@ -56,6 +55,23 @@ if (NOT assimp_POPULATED)
     FetchContent_Populate(assimp)
     add_subdirectory(${assimp_SOURCE_DIR} ${assimp_BINARY_DIR})
 endif()
+
+
+# YAML cpp
+FetchContent_Declare(
+        yaml-cpp
+        DOWNLOAD_EXTRACT_TIMESTAMP OFF
+        GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+        GIT_TAG yaml-cpp-0.9.0 # Can be a tag (yaml-cpp-x.x.x), a commit hash, or a branch name (master)
+)
+FetchContent_GetProperties(yaml-cpp)
+if(NOT yaml-cpp_POPULATED)
+    set(FETCHCONTENT_QUIET NO)
+    FetchContent_Populate(yaml-cpp)
+    add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
+endif()
+
+
 
 
 
