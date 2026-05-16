@@ -88,7 +88,10 @@ namespace Core
 
                 //Takes the shader object and passes it into the Draw function of each ModelComponent, for rendering
                 auto& EntityModel = mc;
-                Renderer::Shader EntityShader = EntityModel.EntityShader;
+                Renderer::Shader EntityShader = Core::ResourceManager::GetShader(mc.ShaderName);
+
+                Renderer::Texture2D EntityTexture = Core::ResourceManager::GetTexture(mc.TexName);
+                printf("TexID = %d", EntityTexture.ID);
 
                 //Activate the current entity's shader
                 EntityShader.Use();
@@ -99,6 +102,7 @@ namespace Core
                 EntityShader.setMatrix4("model", model);
                 EntityShader.setMatrix4("projection", projection);
                 EntityShader.setMatrix4("view", view);
+                EntityShader.setInteger("testTex", EntityTexture.ID);
 
                 //Draws the entity's model, using the shader
                 mc.EntityModel.Draw(EntityShader);

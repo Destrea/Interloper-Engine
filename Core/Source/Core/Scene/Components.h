@@ -9,7 +9,7 @@
 #include "ScriptableEntity.h"
 #include "Core/MapLoader.h"
 #include "Core/Renderer/Shader.h"
-#include "Core/ResourceManager.h"
+
 
 using namespace Renderer;
 
@@ -64,7 +64,7 @@ namespace Core
         std::string modelPath;
 
         //Default shader paths initialized, but then you can change it.
-        //These will likely be replaced with SPIR-V eqquivalents
+        //These will likely be replaced with SPIR-V equivalents
         std::string fragPath;
         std::string vertPath;
         std::string texPath;
@@ -89,7 +89,8 @@ namespace Core
         Renderer::Shader LoadModelShader(std::string name)
         {
             ShaderName = name;
-            return Core::ResourceManager::LoadShader(vertPath.c_str(), fragPath.c_str(), name);
+            EntityShader = Core::ResourceManager::LoadShader(vertPath.c_str(), fragPath.c_str(), name);
+            return EntityShader;
         }
 
         void SetTexture(std::string tex, std::string name = "UnnamedTexture")
@@ -101,8 +102,10 @@ namespace Core
         Renderer::Texture2D LoadModelTexture(std::string name = "UnnamedTexture")
         {
             TexName = name;
-            return Core::ResourceManager::LoadTexture(texPath.c_str(), false, name);
+            EntityTex = Core::ResourceManager::LoadTexture(texPath.c_str(), false, name);
+            return EntityTex;
         }
+
 
     };
 

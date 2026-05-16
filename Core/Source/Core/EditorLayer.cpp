@@ -78,6 +78,19 @@ void EditorLayer::OnRender()
     {
         if(ImGui::BeginMenu("File"))
         {
+            if (ImGui::MenuItem("Serialize"))
+            {
+                SceneSerializer serializer(m_ActiveScene);
+                serializer.Serialize("Resources/scenes/Example.sctxt");
+            }
+
+            if (ImGui::MenuItem("Deserialize"))
+            {
+                SceneSerializer serializer(m_ActiveScene);
+                serializer.Deserialize("Resources/scenes/Example.sctxt");
+            }
+
+
             ImGui::MenuItem("Wowie!");
             ImGui::EndMenu();
         }
@@ -178,8 +191,8 @@ void EditorLayer::BeginEngineUI()
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
-    //m_ActiveScene = std::make_shared<Core::Scene>();
     m_ActiveScene = Core::Application::Get().GetActiveScene();
+    m_InputManager = std::make_shared<Core::InputManager>();
     m_Framebuffer = Core::Application::Get().GetFramebuffer();
 
     window = Core::Application::Get().GetWindow()->GetHandle();
@@ -189,8 +202,9 @@ void EditorLayer::BeginEngineUI()
 
     m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
-    SceneSerializer serializer(m_ActiveScene);
-    serializer.Serialize("Resources/scenes/Example.sctxt");
+
+
+
 
 }
 
@@ -223,9 +237,6 @@ bool EditorLayer::OnKeyPressed(Core::KeyPressedEvent& event)
         SceneSerializer serializer(m_ActiveScene);
         serializer.Serialize("Resources/scenes/Example.sctxt");
     }
-
-
-
 
     return false;
 }

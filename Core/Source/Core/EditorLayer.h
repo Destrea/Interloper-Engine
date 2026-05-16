@@ -56,7 +56,9 @@ namespace Core
 
         GLFWwindow* window = nullptr;
         std::shared_ptr<Core::Window> m_Window = nullptr;
+        std::shared_ptr<Core::InputManager> m_InputManager = nullptr;
         std::shared_ptr<Renderer::Framebuffer> m_Framebuffer = nullptr;
+        std::shared_ptr<Core::ResourceManager> m_ResourceManager = nullptr;
         //std::shared_ptr<Core::Entity> m_EditorCamera = nullptr;
         std::shared_ptr<Core::Scene> m_ActiveScene = nullptr;
 

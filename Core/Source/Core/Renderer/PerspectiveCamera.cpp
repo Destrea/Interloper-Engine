@@ -24,6 +24,10 @@ namespace Renderer
     {
         SetTransform(translation, rotation, scale);
         m_ProjectionMatrix = glm::perspective(m_PerspectiveFOV, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
+        m_WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+        m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+        m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+        RecalculateDirectionalVectors();
     }
 
     void PerspectiveCamera::SetProjection(glm::mat4 ProjectionMatrixIN)

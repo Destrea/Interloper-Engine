@@ -3,7 +3,6 @@ TODO:
 ============================================================
 - Update Editor camera to work differently from "player camera"
 - Pull ImGui code from EditorLayer into it's own Layer
-- Scene Serialization (Saving and loading)
 - Engine config/Settings File reading/writing
 - Entity UUIDs
 - Parent/child relationships for ECS
@@ -13,3 +12,8 @@ TODO:
 - Base audio Implementation
 - Base raycasting Implementation
 - Add more to platform abstraction, Windows layer, and other platforms.
+
+
+Completed:
+============================================================
+- Scene Serialization (Saving and loading)

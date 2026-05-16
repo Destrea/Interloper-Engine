@@ -304,17 +304,24 @@ namespace Core
 
                 //std::string path;
 
-
-                m_SelectionContext.AddComponent<ModelComponent>("Resources/DefaultModels/DefaultCube.obj");
+                std::string modelPath = "Resources/DefaultModels/DefaultCube.obj";
+                auto& mc = m_SelectionContext.AddComponent<ModelComponent>(modelPath);
+                mc.modelPath = modelPath;
                 //Add a placeholder Shader to it here.
+                mc.ShaderName = "DefaultShader";
+                mc.TexName = "DefaultTexture";
+                mc.fragPath = "Resources/Shaders/defaultFragment.glsl";
+                mc.vertPath = "Resources/Shaders/defaultVertex.glsl";
 
-                Renderer::Shader Othershader = Core::ResourceManager::GetShader("Shader1");
-                Renderer::Texture2D myTexture = Core::ResourceManager::GetTexture("wallTest");
+                mc.texPath = "Resources/Textures/Debugempty.png";
+
+                Core::ResourceManager::LoadTexture(mc.texPath.c_str(), false, mc.TexName);
+                Core::ResourceManager::LoadShader(mc.vertPath.c_str(), mc.fragPath.c_str(), mc.ShaderName);
+
+                Renderer::Shader Othershader = Core::ResourceManager::GetShader("DefaultShader");
+                Renderer::Texture2D myTexture = Core::ResourceManager::GetTexture("DefaultTexture");
                 Othershader.setInteger("testTex", myTexture.ID);
 
-                m_SelectionContext.GetComponent<ModelComponent>().EntityShader = Othershader;
-                m_SelectionContext.GetComponent<ModelComponent>().SetShader("Resources/Shaders/defaultVertex.glsl", "Resources/Shaders/defaultFragment.glsl");
-                m_SelectionContext.GetComponent<ModelComponent>().SetTexture("Resources/Textures/Debugempty.png");
                 ImGui::CloseCurrentPopup();
             }
 
@@ -378,8 +385,10 @@ namespace Core
         DrawComponent<ModelComponent>("Model", entity, [](auto& component)
         {
             ImGui::Text("ModelComponent Placeholder");
-            //ImGui::Text("TexturePath %s\n", component.texPath);
-            //ImGui::Text("ShaderPath: %s\n %s\n", component.vertPath, component.fragPath);
+            ImGui::Text("TexturePath %s\n", component.texPath.c_str());
+            ImGui::Text("TextureName %s\n", component.TexName.c_str());
+            ImGui::Text("ShaderPath: %s\n %s\n", component.vertPath.c_str(), component.fragPath.c_str());
+            ImGui::Text("ShaderName: %s\n", component.ShaderName.c_str());
         });
 
         DrawComponent<NativeScriptComponent>("Script", entity, [](auto& component)
