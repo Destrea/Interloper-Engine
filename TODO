@@ -13,7 +13,9 @@ TODO:
 - Base raycasting Implementation
 - Add more to platform abstraction, Windows layer, and other platforms.
 
+- Complete cross-platform file dialog box implementation. (Windows, and probably Linux GTK)
 
 Completed:
 ============================================================
 - Scene Serialization (Saving and loading)
+

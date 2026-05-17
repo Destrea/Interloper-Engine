@@ -104,7 +104,6 @@ namespace Core
         out << YAML::Key << "Entity";
         out << YAML::Value << "1234567890"; //TODO: Entity UUID goes here
 
-
         //Tag Component Serialization
         if(entity.HasComponent<TagComponent>())
         {
@@ -201,6 +200,8 @@ namespace Core
     //Serializes the scene to a text file, for readability
     void SceneSerializer::Serialize(const std::string& path)
     {
+
+        //TODO: Figure out whats up with the "Phantom" entity being serialized
         YAML::Emitter out;
         out << YAML::BeginMap;
         out << YAML::Key << "Scene";
@@ -264,7 +265,6 @@ namespace Core
                 auto tagComponent = entity["TagComponent"];
                 if(tagComponent)
                     name = tagComponent["Tag"].as<std::string>();
-                printf("TagComponent done\n");
                 //Create our new entity with the deserialized name
                 Entity deserializedEntity = m_Scene->CreateEntity(name);
 
@@ -277,7 +277,6 @@ namespace Core
                     tc.Translation = transformComponent["Translation"].as<glm::vec3>();
                     tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
                     tc.Scale = transformComponent["Scale"].as<glm::vec3>();
-                    printf("TransformComponent done\n");
                 }
 
 
@@ -301,17 +300,12 @@ namespace Core
 
                     Core::ResourceManager::LoadTexture(mc.texPath.c_str(), false, mc.TexName);
                     Core::ResourceManager::LoadShader(mc.vertPath.c_str(), mc.fragPath.c_str(), mc.ShaderName);
-                    Renderer::Texture2D EntityTexture = Core::ResourceManager::GetTexture(mc.TexName);
-                    printf("TexID = %d", EntityTexture.ID);
 
-                    printf("ModelComponent done\n");
                 }
 
                 auto mapDataComponent = entity["MapDataComponent"];
                 if(mapDataComponent)
                 {
-                    //auto& mdc = deserializedEntity.AddComponent<MapDataComponent>();
-                    printf("MapDataComponent done\n");
                 }
 
                 auto cameraComponent = entity["CameraComponent"];
@@ -321,7 +315,6 @@ namespace Core
                     auto& tc = deserializedEntity.GetComponent<TransformComponent>();
                     auto& cc = deserializedEntity.AddComponent<CameraComponent>(tc.Translation, tc.Rotation, tc.Scale);
                     cc.p_Camera.SetAspectRatio(1920, 1080);
-                    printf("CameraComponent done\n");
                 }
 
                 auto nativeScriptComponent = entity["NativeScriptComponent"];
@@ -391,7 +384,6 @@ namespace Core
                     };
 
                     deserializedEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-                    printf("NativeScriptComponent done\n");
                 }
 
             }

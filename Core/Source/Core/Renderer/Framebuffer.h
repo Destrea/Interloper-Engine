@@ -17,7 +17,7 @@ namespace Renderer
         //TODO Fix issues with the framebuffer
 
         Framebuffer(const FramebufferSpecification& specification = FramebufferSpecification());
-        ~Framebuffer() { Shutdown(); }
+        ~Framebuffer() { }
 
 
 
@@ -27,9 +27,8 @@ namespace Renderer
         void Bind();
         void Unbind();
         void Rescale(uint32_t width, uint32_t height);
-        void Shutdown();
         FramebufferSpecification GetSpec() {return m_Specification; }
-
+        void Shutdown();
         GLuint GetColorAttachmentRendererID() const { return m_ColorAttachment; }
         GLuint GetFBO();
         GLuint GetRBO();

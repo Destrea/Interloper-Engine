@@ -1,6 +1,7 @@
 
 #include "EditorLayer.h"
 #include "Scene/SceneSerializer.h"
+#include "nfd.h"
 
 using namespace Core;
 
@@ -78,16 +79,37 @@ void EditorLayer::OnRender()
     {
         if(ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("Serialize"))
+            if (ImGui::MenuItem("Save Scene"))
             {
-                SceneSerializer serializer(m_ActiveScene);
-                serializer.Serialize("Resources/scenes/Example.sctxt");
+                nfdchar_t *savePath = NULL;
+                nfdresult_t result = NFD_SaveDialog("sctxt", NULL, &savePath);
+                if(result == NFD_OKAY)
+                {
+                    printf("SUCCESS!]\n Path: %s\n", savePath);
+                    std::string path = std::string(savePath);
+                    if(!path.contains(".sctxt"))
+                    {
+                        path.append(".sctxt");
+                    }
+                    printf("Path value: %s", path.c_str());
+                    SceneSerializer serializer(m_ActiveScene);
+                    serializer.Serialize(savePath);
+                    free(savePath);
+                }
             }
 
-            if (ImGui::MenuItem("Deserialize"))
+            if (ImGui::MenuItem("Load Scene"))
             {
-                SceneSerializer serializer(m_ActiveScene);
-                serializer.Deserialize("Resources/scenes/Example.sctxt");
+                //File (Open) selection dialog. Should work across platforms.
+                nfdchar_t *outPath = NULL;
+                nfdresult_t result = NFD_OpenDialog( "sctxt", NULL, &outPath);
+                if(result == NFD_OKAY)
+                {
+                    printf("SUCCESS!]\n Path: %s\n", outPath);
+                    SceneSerializer serializer(m_ActiveScene);
+                    serializer.Deserialize(outPath);
+                    free(outPath);
+                }
             }
 
 
@@ -224,7 +246,6 @@ bool EditorLayer::OnMouseMoved(Core::MouseMovedEvent& event)
 bool EditorLayer::OnWindowClosed(Core::WindowClosedEvent& event)
 {
     //Window closing Handling.
-    std::println("Window Closed!\n");
     EditorLayer::~EditorLayer();
     return false;
 }

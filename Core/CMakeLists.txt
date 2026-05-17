@@ -15,6 +15,18 @@ vendor/glad/include/KHR/khrplatform.h
 #entt
 vendor/entt/include/entt.hpp
 
+#nativefiledialog
+vendor/nativefiledialog/src/include/
+vendor/nativefiledialog/src/common.h
+vendor/nativefiledialog/src/nfd_common.h
+vendor/nativefiledialog/src/nfd_common.c
+#vendor/nativefiledialog/src/nfd_gtk.c
+#vendor/nativefiledialog/src/nfd_win.cpp
+# Re-add these optionally with compile flags, so that cmake includes them as decided.
+
+vendor/nativefiledialog/src/nfd_zenity.c
+vendor/nativefiledialog/src/simple_exec.h
+
 #imgui Includes
 vendor/ImGui/imconfig.h
 vendor/ImGui/imgui.cpp
@@ -53,9 +65,10 @@ Source/Core/MapLoader.cpp
 Source/Core/Input.h
 
 # Platform Abstractions
+Source/Core/Utils/PlatformUtils.h
 Source/Core/Platform/LinuxInput.h
 Source/Core/Platform/LinuxInput.cpp
-
+Source/Core/Platform/LinuxPlatformUtils.cpp
 
 # Rendering
 Source/Core/Renderer/Renderer.h
@@ -113,7 +126,7 @@ add_custom_target(copy_core_res ALL
     ${PROJECT_BINARY_DIR}/Core/Res
     COMMENT "Copying Core resources into binary directory")
 
-target_include_directories(Core PUBLIC "Res" "Source" "vendor/stb" "vendor/glad/include" "vendor/ImGui" "vendor/entt/include")
+target_include_directories(Core PUBLIC "Res" "Source" "vendor/stb" "vendor/glad/include" "vendor/ImGui" "vendor/entt/include" "vendor/nativefiledialog/src/include")
 
 
 

@@ -23,10 +23,8 @@ AppLayer::AppLayer()
 {
 
     //Create Shader and load it.
-    Renderer::Shader testShader =  Core::ResourceManager::LoadShader("Resources/Shaders/defaultVertex.glsl", "Resources/Shaders/defaultFragment.glsl", "DefaultShader");
-    printf("TestShader.ID: %d ", testShader.ID);
-    Renderer::Texture2D testTexture = Core::ResourceManager::LoadTexture("Resources/Textures/Debugempty.png", false, "DefaultTexture");
-     printf("TestTexture.ID: %d ", testTexture.ID);
+    //Renderer::Shader testShader =  Core::ResourceManager::LoadShader("Resources/Shaders/defaultVertex.glsl", "Resources/Shaders/defaultFragment.glsl", "DefaultShader");
+    //Renderer::Texture2D testTexture = Core::ResourceManager::LoadTexture("Resources/Textures/Debugempty.png", false, "DefaultTexture");
     //m_ActiveScene = std::make_shared<Core::Scene>();
     m_ActiveScene = Core::Application::Get().GetActiveScene();
 
@@ -96,10 +94,8 @@ AppLayer::AppLayer()
 
 AppLayer::~AppLayer()
 {
-    m_Framebuffer->Shutdown();
     glDeleteVertexArrays(1, &m_VertexArray);
     glDeleteBuffers(1, &m_VertexBuffer);
-
     glDeleteProgram(m_Shader);
 }
 
@@ -176,7 +172,7 @@ bool AppLayer::OnMouseMoved(Core::MouseMovedEvent& event)
 bool AppLayer::OnWindowClosed(Core::WindowClosedEvent& event)
 {
     //Window closing Handling.
-    std::println("Window Closed!\n");
+    std::println("Window/Application closed successfully!");
     AppLayer::~AppLayer();
     return false;
 }

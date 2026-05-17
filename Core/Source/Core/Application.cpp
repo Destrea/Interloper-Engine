@@ -50,10 +50,10 @@ namespace Core {
 
     Application::~Application()
     {
+        //printf("\nShutting down Application\n");
+        //m_Framebuffer->Shutdown();
         m_Window->Destroy();
-
         glfwTerminate();
-
         s_Application = nullptr;
     }
 

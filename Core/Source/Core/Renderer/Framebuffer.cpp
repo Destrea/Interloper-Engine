@@ -1,11 +1,25 @@
 #include "Framebuffer.h"
 #include <stdio.h>
+#include <string>
+#include <iostream>
 
 namespace Renderer
 {
     Framebuffer::Framebuffer(const FramebufferSpecification& specification) : m_Specification(specification )
     {
         Init();
+    }
+
+    void Framebuffer::Shutdown()
+    {
+        /*
+        glDeleteFramebuffers(1, &m_FramebufferID);
+        std::cout << glGetError() << std::endl;
+        glDeleteTextures(1, &m_ColorAttachment);
+        std::cout << glGetError() << std::endl;
+        glDeleteTextures(1, &m_DepthAttachment);
+        std::cout << glGetError() << std::endl;
+        */
     }
 
 
@@ -90,12 +104,7 @@ namespace Renderer
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_DepthAttachment);
     }
 
-    void Framebuffer::Shutdown()
-    {
-        glDeleteFramebuffers(1, &m_FramebufferID);
-        glDeleteTextures(1, &m_ColorAttachment);
-        glDeleteTextures(1, &m_DepthAttachment);
-    }
+
 
     GLuint Framebuffer::GetFBO()
     {
