@@ -1,7 +1,7 @@
 
 #include "EditorLayer.h"
 #include "Scene/SceneSerializer.h"
-#include "nfd.h"
+#include "Utils/PlatformUtils.h"
 
 using namespace Core;
 
@@ -79,13 +79,25 @@ void EditorLayer::OnRender()
     {
         if(ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("Save Scene"))
+
+            //TODO: New Scene
+            if(ImGui::MenuItem("New", "Ctrl+N"))
             {
+                NewScene();
+            }
+
+
+            //TODO: Save (As current file)
+            if (ImGui::MenuItem("Save...", "Ctrl+S"))
+            {
+
+                //Check if a file has already been loaded. If so, use the same file path.
+                /*
                 nfdchar_t *savePath = NULL;
                 nfdresult_t result = NFD_SaveDialog("sctxt", NULL, &savePath);
                 if(result == NFD_OKAY)
                 {
-                    printf("SUCCESS!]\n Path: %s\n", savePath);
+                    printf("SUCCESS!\n Path: %s\n", savePath);
                     std::string path = std::string(savePath);
                     if(!path.contains(".sctxt"))
                     {
@@ -96,20 +108,18 @@ void EditorLayer::OnRender()
                     serializer.Serialize(savePath);
                     free(savePath);
                 }
+                */
+
             }
 
-            if (ImGui::MenuItem("Load Scene"))
+            if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
             {
-                //File (Open) selection dialog. Should work across platforms.
-                nfdchar_t *outPath = NULL;
-                nfdresult_t result = NFD_OpenDialog( "sctxt", NULL, &outPath);
-                if(result == NFD_OKAY)
-                {
-                    printf("SUCCESS!]\n Path: %s\n", outPath);
-                    SceneSerializer serializer(m_ActiveScene);
-                    serializer.Deserialize(outPath);
-                    free(outPath);
-                }
+                SaveSceneAs();
+            }
+
+            if (ImGui::MenuItem("Open...", "Ctrl+O"))
+            {
+                OpenScene();
             }
 
 
@@ -252,21 +262,32 @@ bool EditorLayer::OnWindowClosed(Core::WindowClosedEvent& event)
 
 bool EditorLayer::OnKeyPressed(Core::KeyPressedEvent& event)
 {
-    //Keyboard Input handling ONLY for AppLayer
-    if (Input::IsKeyPressed(GLFW_KEY_U))
+
+    //New Scene "Ctrl+N"
+    if((Input::IsKeyPressed(GLFW_KEY_N) && Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL)) || (Input::IsKeyPressed(GLFW_KEY_N) && Input::IsKeyPressed(GLFW_KEY_RIGHT_CONTROL)))
     {
-        SceneSerializer serializer(m_ActiveScene);
-        serializer.Serialize("Resources/scenes/Example.sctxt");
+        NewScene();
     }
+
+
+    //Save As... "Ctrl+Shift+S"
+    if((Input::IsKeyPressed(GLFW_KEY_S) && Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL) && Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT)))
+    {
+
+        SaveSceneAs();
+    }
+
+    //Open Scene "Ctrl+O"
+    if(Input::IsKeyPressed(GLFW_KEY_O) && Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL))
+    {
+        OpenScene();
+    }
+
+
 
     return false;
 }
 
-void EditorLayer::GetFPS()
-{
-
-
-}
 
 //TODO: Move to ImGuiLayer later
 void EditorLayer::SetDarkThemeColors()
@@ -276,4 +297,48 @@ void EditorLayer::SetDarkThemeColors()
     //TODO: Add Colors here. Refer to Demo project or video to see how an example line is done.
 
 }
+
+
+void EditorLayer::NewScene()
+{
+    m_ActiveScene = CreateRef<Scene>();
+    //m_ActiveScene
+    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+}
+
+void EditorLayer::SaveSceneAs()
+{
+    std::string filePath = FileDialogs::SaveFile("sctxt");
+    if(filePath != "")
+    {
+
+        if(!filePath.contains(".sctxt"))
+        {
+            filePath.append(".sctxt");
+        }
+
+        SceneSerializer serializer(m_ActiveScene);
+        serializer.Serialize(filePath);
+
+    }
+}
+
+void EditorLayer::OpenScene()
+{
+    //Reset the selected scene, so that it deserializes onto a fresh scene.
+    m_ActiveScene = CreateRef<Scene>();
+    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    //File (Open) selection dialog. Should work across platforms.
+    std::string filePath = FileDialogs::OpenFile("sctxt");
+    if(filePath != "")
+    {
+        //printf("SUCCESS!]\n Path: %s\n", outPath);
+        SceneSerializer serializer(m_ActiveScene);
+        serializer.Deserialize(filePath);
+    }
+}
+
+
+
+
 

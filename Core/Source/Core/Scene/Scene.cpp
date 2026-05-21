@@ -53,9 +53,6 @@ namespace Core
             Entity entity{entityID, this};
             auto& EntityCamera = cc;
 
-            //processPlayerInput here.
-
-            //TODO: Rework inputManager to be the one to interact with the window manager, so that Scene doesnt need to depend on Window.h
 
 
         });

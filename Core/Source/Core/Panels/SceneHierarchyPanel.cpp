@@ -25,6 +25,7 @@ namespace Core
     {
         //For now only a setter, but may do more later.
         m_Context = context;
+        m_SelectionContext = {};
     }
 
     void SceneHierarchyPanel::OnImGuiRender()

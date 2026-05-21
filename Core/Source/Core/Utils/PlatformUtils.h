@@ -4,6 +4,8 @@
 
 
 #include <string>
+#include "nfd.h"
+
 
 namespace Core {
 
@@ -15,8 +17,5 @@ namespace Core {
 
 
     };
-
-
-
 
 }

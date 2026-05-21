@@ -44,6 +44,11 @@ namespace Core
         void toggleHidden();
         void GetFPS();
 
+
+        void NewScene();
+        void SaveSceneAs();
+        void OpenScene();
+
     public:
         void SetDarkThemeColors();
     private:
